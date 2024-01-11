@@ -7,3 +7,7 @@ type Email string
 func (e Email) IsValid() error {
 	return validator.Validate(string(e), "email")
 }
+
+func (e Email) IsZero() bool {
+	return e == ""
+}

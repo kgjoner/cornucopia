@@ -12,3 +12,7 @@ type Address struct {
 }
 
 type ZipCode string
+
+func (z ZipCode) IsZero() bool {
+	return z == ""
+}

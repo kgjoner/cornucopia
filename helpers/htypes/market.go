@@ -75,4 +75,8 @@ func (m Market) Currency() Currency {
 	return currencyByMarket[m]
 }
 
+func (m Market) IsZero() bool {
+	return m == ""
+}
+
 var MarketValues = Market.Enumerate("").(marketValues)

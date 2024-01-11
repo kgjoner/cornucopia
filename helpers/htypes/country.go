@@ -23,6 +23,10 @@ func (c Country) IsValid() error {
 	return nil
 }
 
+func (c Country) IsZero() bool {
+	return c == ""
+}
+
 func (c Country) Name() string {
 	data, _ := ioutil.ReadFile("./assets/countries.json")
 

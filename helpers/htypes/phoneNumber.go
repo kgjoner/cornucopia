@@ -68,3 +68,7 @@ func (p PhoneNumber) Parts() (*PhoneNumberParts, error) {
 
 	return nil, normalizederr.NewValidationError("Phone out of region.")
 }
+
+func (a PhoneNumber) IsZero() bool {
+	return a == ""
+}
