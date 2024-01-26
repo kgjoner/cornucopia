@@ -11,8 +11,7 @@ func Time(value reflect.Value, validations map[string][]string) error {
 	for name, args := range validations {
 		validationFn := timeValidations[name]
 		if validationFn == nil {
-			return nil
-			// return normalizederr.NewValidationError("Unknown desired validation for type time")
+			return normalizederr.NewValidationError("Unknown desired validation for type time")
 		}
 
 		t, _ := value.Interface().(time.Time)
