@@ -6,7 +6,8 @@ import (
 )
 
 type StructSample struct {
-	name string `validate:"required"`
+	Name string `validate:"required"`
+	Age  int
 }
 
 func TestRequiredField(t *testing.T) {
@@ -19,11 +20,20 @@ func TestRequiredField(t *testing.T) {
 	}
 
 	structSample := StructSample{}
-	err = Validate(structSample)
-	if err == nil || !strings.Contains(err.Error(), "name: ") {
+	err = Validate(structSample, "required")
+	if err == nil {
 		t.Errorf("Expected error, got nil")
 		return
-	} else if !strings.Contains(err.Error(), "name: Required") {
+	} else if !strings.Contains(err.Error(), "Required") {
+		t.Errorf("Expected Required error, got %s", err)
+	}
+
+	structSample.Age = 21
+	err = Validate(structSample, "required")
+	if err == nil || !strings.Contains(err.Error(), "Name: ") {
+		t.Errorf("Expected error, got %v", err)
+		return
+	} else if !strings.Contains(err.Error(), "Name: Required") {
 		t.Errorf("Expected Required error, got %s", err)
 	}
 

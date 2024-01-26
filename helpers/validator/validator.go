@@ -71,18 +71,21 @@ func assertSelfValidation(primitive interface{}) error {
 func validateArray(arr reflect.Value, validations []string) error {
 	length := arr.Len()
 
+	forwardedValidations := []string{}
 	for i, validation := range validations {
 		if strings.Contains(validation, "required") {
 			if arr.IsZero() || length == 0 {
 				return normalizederr.NewValidationError("Required.")
 			}
 			validations = sliceman.Remove(validations, i)
+		} else {
+			forwardedValidations = append(forwardedValidations, validation)
 		}
 	}
 
 	for i := 0; i < length; i++ {
 		v := arr.Index(i)
-		err := Validate(v, validations...)
+		err := Validate(v, forwardedValidations...)
 		if err != nil {
 			return err
 		}
@@ -94,12 +97,15 @@ func validateArray(arr reflect.Value, validations []string) error {
 func validateMap(mp reflect.Value, validations []string) error {
 	length := mp.Len()
 
+	forwardedValidations := []string{}
 	for i, validation := range validations {
 		if strings.Contains(validation, "required") {
 			if mp.IsZero() || length == 0 {
 				return normalizederr.NewValidationError("Required.")
 			}
 			validations = sliceman.Remove(validations, i)
+		} else {
+			forwardedValidations = append(forwardedValidations, validation)
 		}
 	}
 
@@ -110,7 +116,7 @@ func validateMap(mp reflect.Value, validations []string) error {
 		}
 
 		v := mp.MapIndex(key)
-		err = Validate(v, validations...)
+		err = Validate(v, forwardedValidations...)
 		if err != nil {
 			return err
 		}
@@ -121,14 +127,17 @@ func validateMap(mp reflect.Value, validations []string) error {
 
 func validateEnum(enum Enum, validations []string) error {
 	var availableOpt []string
-	for i, validation := range validations {
+
+	forwardedValidations := []string{}
+	for _, validation := range validations {
 		if strings.Contains(validation, "restrictenum=") {
 			availableOpt = validationMap(validation)["restrictenum"]
-			validations = sliceman.Remove(validations, i)
+		} else {
+			forwardedValidations = append(forwardedValidations, validation)
 		}
 	}
 
-	err := validatePrimitive(reflect.ValueOf(enum), validations)
+	err := validatePrimitive(reflect.ValueOf(enum), forwardedValidations)
 	if err != nil {
 		return err
 	}
@@ -210,6 +219,10 @@ func validateStruct(obj interface{}, validations []string) error {
 		case "ignore":
 			return nil
 		}
+	}
+
+	if objValue.IsZero() {
+		return nil
 	}
 
 	validationsByField := extractValidationsByField(obj)
