@@ -3,6 +3,7 @@ package htypes
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 )
@@ -31,4 +32,13 @@ func (e Email) IsValid() error {
 
 func (e Email) IsZero() bool {
 	return e == ""
+}
+
+func (e Email) String() string {
+	return string(e)
+}
+
+// Turn all letters to lowercase 
+func (e Email) Normalize() Email {
+	return Email(strings.ToLower(string(e)))
 }
