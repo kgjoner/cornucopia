@@ -72,3 +72,7 @@ func (p PhoneNumber) Parts() (*PhoneNumberParts, error) {
 func (a PhoneNumber) IsZero() bool {
 	return a == ""
 }
+
+func (a PhoneNumber) String() string {
+	return string(a)
+}
