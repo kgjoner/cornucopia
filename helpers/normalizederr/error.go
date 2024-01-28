@@ -74,6 +74,16 @@ func NewUnauthorizedError(message string) NormalizedError {
 	}
 }
 
+func NewFatalUnauthorizedError(message string) NormalizedError {
+	return NormalizedError{
+		message,
+		"FatalUnauthorized",
+		"0002001",
+		getStack(),
+		nil,
+	}
+}
+
 func NewFatalInternalError(message string) NormalizedError {
 	return NormalizedError{
 		message,

@@ -47,6 +47,9 @@ func HttpError(err error, w http.ResponseWriter, r *http.Request) {
 		case "Unauthorized":
 			status = http.StatusUnauthorized
 			logLevel = log.WarnLevel
+		case "FatalUnauthorized":
+			status = http.StatusUnauthorized
+			logLevel = log.FatalLevel
 		case "Forbidden":
 			status = http.StatusForbidden
 			logLevel = log.WarnLevel
