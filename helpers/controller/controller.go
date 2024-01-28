@@ -60,6 +60,21 @@ func (c *Controller) AddActor() *Controller {
 	return c
 }
 
+func (c *Controller) AddApplication() *Controller {
+	if c.err != nil {
+		return c
+	}
+
+	application := c.req.Context().Value("application")
+	if application == nil {
+		c.err = normalizederr.NewUnauthorizedError("Application required.")
+		return c
+	}
+
+	c.fields["application"] = application
+	return c
+}
+
 // Receive actor and parse relevant fields. Inputted func must return array of tuples in form [key, value].
 func (c *Controller) ParseActorAs(setFields func(actor any, fields map[string]any)) *Controller {
 	if c.err != nil {
