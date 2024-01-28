@@ -192,13 +192,13 @@ func wordId(str string, _ []string) error {
 		return nil
 	}
 
-	doesMatch, err := regexp.MatchString(`^[\w.]+$`, str)
+	doesMatch, err := regexp.MatchString(`^[a-zA-Z0-9.]+$`, str)
 	if err != nil {
 		return err
 	} else if doesMatch {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must have only alphanumeric characters, period and underscore")
+	msg := fmt.Sprintf("Must have only letters, numbers and period.")
 	return normalizederr.NewValidationError(msg)
 }
