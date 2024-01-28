@@ -11,11 +11,11 @@ import (
 
 var (
 	Counter200 = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "scapi_200_success_count",
+		Name: "api_200_success_count",
 		Help: "The total number of ok responses",
 	})
 	Counter201 = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "scapi_201_success_count",
+		Name: "api_201_success_count",
 		Help: "The total number of created responses",
 	})
 )

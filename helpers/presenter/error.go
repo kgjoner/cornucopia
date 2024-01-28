@@ -13,27 +13,27 @@ import (
 var (
 	ErrCounters = map[int]prometheus.Counter{
 		401: promauto.NewCounter(prometheus.CounterOpts{
-			Name: "401_error_count",
+			Name: "api_401_error_count",
 			Help: "The total number of unauthorized response errors",
 		}),
 		403: promauto.NewCounter(prometheus.CounterOpts{
-			Name: "403_error_count",
+			Name: "api_403_error_count",
 			Help: "The total number of forbidden response errors",
 		}),
 		400: promauto.NewCounter(prometheus.CounterOpts{
-			Name: "400_error_count",
+			Name: "api_400_error_count",
 			Help: "The total number of bad request response errors",
 		}),
 		422: promauto.NewCounter(prometheus.CounterOpts{
-			Name: "422_error_count",
+			Name: "api_422_error_count",
 			Help: "The total number of validation response errors",
 		}),
 		500: promauto.NewCounter(prometheus.CounterOpts{
-			Name: "500_error_count",
+			Name: "api_500_error_count",
 			Help: "The total number of internal server response errors",
 		}),
 		502: promauto.NewCounter(prometheus.CounterOpts{
-			Name: "502_error_count",
+			Name: "api_502_error_count",
 			Help: "The total number of bad gateway response errors",
 		}),
 	}
