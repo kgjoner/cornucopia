@@ -31,7 +31,7 @@ func Validate(value interface{}, validations ...string) error {
 		reflectValue = reflect.Indirect(reflectValue)
 	}
 
-	if !reflectValue.IsZero() && reflectValue.CanInterface() {
+	if reflectValue.IsValid() && reflectValue.CanInterface() {
 		switch t := reflectValue.Interface().(type) {
 		case Enum:
 			return validateEnum(t, validations)
