@@ -28,6 +28,10 @@ type ParsedDocument struct {
 
 func (d Document) Parse() ParsedDocument {
 	parts := strings.Split(string(d), "_")
+	if len(parts) != 2 {
+		return ParsedDocument{}
+	}
+
 	return ParsedDocument {
 		Number: parts[1],
 		Kind: parts[0],
