@@ -199,6 +199,13 @@ func (c *Controller) AddPagination() *Controller {
 	return c
 }
 
+func (c *Controller) AddHeader(header string) *Controller {
+	headerValue := c.req.Header.Get(header)
+
+	c.fields[header] = headerValue
+	return c
+}
+
 func (c *Controller) AddMarket() *Controller {
 	timezone := c.req.Header.Get("x-timezone")
 	market, err := htypes.MarketByTimezone(timezone)
