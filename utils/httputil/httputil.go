@@ -27,41 +27,47 @@ type Options struct {
 	Headers map[string]string
 }
 
-func (u HttpUtil) Get(path string, opt *Options) (*http.Response, error) {
+type Executer func(data any) (*http.Response, error)
+
+func (u HttpUtil) Get(path string, opt *Options) Executer {
 	req, err := http.NewRequest("GET", u.baseUrl+path, nil)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	if opt != nil {
 		SetOptions(req, *opt)
 	}
 
-	return DoReq(u.client, req)
+	return func(data any) (*http.Response, error) {
+		return DoReq(u.client, req, data)
+	}
 }
 
-func (u HttpUtil) Delete(path string, opt *Options) (*http.Response, error) {
+func (u HttpUtil) Delete(path string, opt *Options) Executer {
 	req, err := http.NewRequest("DELETE", u.baseUrl+path, nil)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	if opt != nil {
 		SetOptions(req, *opt)
 	}
 
-	return DoReq(u.client, req)
+	return func(data any) (*http.Response, error) {
+		return DoReq(u.client, req, data)
+	}
 }
 
-func (u HttpUtil) Post(path string, body map[string]string, opt *Options) (*http.Response, error) {
+func (u HttpUtil) Post(path string, body map[string]string, opt *Options) Executer {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	req, err := http.NewRequest("POST", u.baseUrl+path, bytes.NewBuffer(jsonBody))
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	if opt != nil {
@@ -69,18 +75,20 @@ func (u HttpUtil) Post(path string, body map[string]string, opt *Options) (*http
 	}
 	
 	req.Header.Add("content-type", "application/json")
-	return DoReq(u.client, req)
+	return func(data any) (*http.Response, error) {
+		return DoReq(u.client, req, data)
+	}
 }
 
-func (u HttpUtil) Put(path string, body map[string]string, opt *Options) (*http.Response, error) {
+func (u HttpUtil) Put(path string, body map[string]string, opt *Options) Executer {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	req, err := http.NewRequest("PUT", u.baseUrl+path, bytes.NewBuffer(jsonBody))
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	if opt != nil {
@@ -88,18 +96,20 @@ func (u HttpUtil) Put(path string, body map[string]string, opt *Options) (*http.
 	}
 
 	req.Header.Add("content-type", "application/json")
-	return DoReq(u.client, req)
+	return func(data any) (*http.Response, error) {
+		return DoReq(u.client, req, data)
+	}
 }
 
-func (u HttpUtil) Patch(path string, body map[string]string, opt *Options) (*http.Response, error) {
+func (u HttpUtil) Patch(path string, body map[string]string, opt *Options) Executer {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	req, err := http.NewRequest("PATCH", u.baseUrl+path, bytes.NewBuffer(jsonBody))
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	if opt != nil {
@@ -107,7 +117,9 @@ func (u HttpUtil) Patch(path string, body map[string]string, opt *Options) (*htt
 	}
 
 	req.Header.Add("content-type", "application/json")
-	return DoReq(u.client, req)
+	return func(data any) (*http.Response, error) {
+		return DoReq(u.client, req, data)
+	}
 }
 
 func SetOptions(req *http.Request, opt Options) {
@@ -126,8 +138,9 @@ func SetOptions(req *http.Request, opt Options) {
 	}
 }
 
-func DoReq(client *http.Client, req *http.Request) (*http.Response, error) {
+func DoReq(client *http.Client, req *http.Request, data any) (*http.Response, error) {
 	res, err := client.Do(req)
+	defer res.Body.Close()
 	if err != nil {
 		return res, err
 	}
@@ -144,24 +157,9 @@ func DoReq(client *http.Client, req *http.Request) (*http.Response, error) {
 			"ResponseBody":   errors.New(fmt.Sprintln(bodyErr)),
 		})
 		
-		res.Body.Close()
 		return res, err
 	}
 
+	json.NewDecoder(res.Body).Decode(&data)
 	return res, nil
-}
-
-func ReadBody[T any](resp *http.Response) (*T, error) {
-	if (resp.Close) {
-		return nil, normalizederr.NewRequestError("Body is closed", "")
-	}
-
-	var result T
-	err := json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		return nil, err
-	}
-
-	resp.Body.Close()
-	return &result, nil
 }
