@@ -22,12 +22,12 @@ func New(baseUrl string) *HttpUtil {
 	}
 }
 
-type HttpUtilOptions struct {
+type Options struct {
 	Params  map[string]string
 	Headers map[string]string
 }
 
-func (u HttpUtil) Get(path string, opt *HttpUtilOptions) (*http.Response, error) {
+func (u HttpUtil) Get(path string, opt *Options) (*http.Response, error) {
 	req, err := http.NewRequest("GET", u.baseUrl+path, nil)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (u HttpUtil) Get(path string, opt *HttpUtilOptions) (*http.Response, error)
 	return DoReq(u.client, req)
 }
 
-func (u HttpUtil) Delete(path string, opt *HttpUtilOptions) (*http.Response, error) {
+func (u HttpUtil) Delete(path string, opt *Options) (*http.Response, error) {
 	req, err := http.NewRequest("DELETE", u.baseUrl+path, nil)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (u HttpUtil) Delete(path string, opt *HttpUtilOptions) (*http.Response, err
 	return DoReq(u.client, req)
 }
 
-func (u HttpUtil) Post(path string, body map[string]string, opt *HttpUtilOptions) (*http.Response, error) {
+func (u HttpUtil) Post(path string, body map[string]string, opt *Options) (*http.Response, error) {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (u HttpUtil) Post(path string, body map[string]string, opt *HttpUtilOptions
 	return DoReq(u.client, req)
 }
 
-func (u HttpUtil) Put(path string, body map[string]string, opt *HttpUtilOptions) (*http.Response, error) {
+func (u HttpUtil) Put(path string, body map[string]string, opt *Options) (*http.Response, error) {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (u HttpUtil) Put(path string, body map[string]string, opt *HttpUtilOptions)
 	return DoReq(u.client, req)
 }
 
-func (u HttpUtil) Patch(path string, body map[string]string, opt *HttpUtilOptions) (*http.Response, error) {
+func (u HttpUtil) Patch(path string, body map[string]string, opt *Options) (*http.Response, error) {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (u HttpUtil) Patch(path string, body map[string]string, opt *HttpUtilOption
 	return DoReq(u.client, req)
 }
 
-func SetOptions(req *http.Request, opt HttpUtilOptions) {
+func SetOptions(req *http.Request, opt Options) {
 	if opt.Headers != nil {
 		for k, v := range opt.Headers {
 			req.Header.Add(k, v)
