@@ -20,6 +20,10 @@ var (
 	})
 )
 
+type Success[T any] struct {
+	Data T
+}
+
 type successResponse struct {
 	Data any `json:"data"`
 }
