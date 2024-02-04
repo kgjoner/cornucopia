@@ -67,7 +67,8 @@ func (u HttpUtil) Post(path string, body map[string]string, opt *HttpUtilOptions
 	if opt != nil {
 		SetOptions(req, *opt)
 	}
-
+	
+	req.Header.Add("content-type", "application/json")
 	return DoReq(u.client, req)
 }
 
@@ -86,6 +87,7 @@ func (u HttpUtil) Put(path string, body map[string]string, opt *HttpUtilOptions)
 		SetOptions(req, *opt)
 	}
 
+	req.Header.Add("content-type", "application/json")
 	return DoReq(u.client, req)
 }
 
@@ -104,6 +106,7 @@ func (u HttpUtil) Patch(path string, body map[string]string, opt *HttpUtilOption
 		SetOptions(req, *opt)
 	}
 
+	req.Header.Add("content-type", "application/json")
 	return DoReq(u.client, req)
 }
 
