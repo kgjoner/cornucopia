@@ -143,9 +143,25 @@ func DoReq(client *http.Client, req *http.Request) (*http.Response, error) {
 			"ResponseStatus": errors.New(fmt.Sprintln(res.StatusCode)),
 			"ResponseBody":   errors.New(fmt.Sprintln(bodyErr)),
 		})
-
+		
+		res.Body.Close()
 		return res, err
 	}
 
 	return res, nil
+}
+
+func ReadBody[T any](resp *http.Response) (*T, error) {
+	if (resp.Close) {
+		return nil, normalizederr.NewRequestError("Body is closed", "")
+	}
+
+	var result T
+	err := json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	resp.Body.Close()
+	return &result, nil
 }
