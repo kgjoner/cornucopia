@@ -49,33 +49,35 @@ func atLeastOne(str string, options []string) error {
 		return nil
 	}
 
-	rgxStr := "^"
 	bodyMsg := ""
+	doesMatch := true
 	for _, opt := range options {
+		var rgxStr string
 		switch opt {
 		case "letter":
-			rgxStr += "(?=.*[a-zA-Z])"
+			rgxStr = "[a-zA-Z]"
 			bodyMsg += " 1 letter"
 		case "lowercase":
-			rgxStr += "(?=.*[a-z])"
+			rgxStr = "[a-z]"
 			bodyMsg += " 1 lowercase"
 		case "uppercase":
-			rgxStr += "(?=.*[A-Z])"
+			rgxStr = "[A-Z]"
 			bodyMsg += " 1 uppercase"
 		case "number":
-			rgxStr += "(?=.*[0-9])"
+			rgxStr = "[0-9]"
 			bodyMsg += " 1 number"
 		case "specialChar":
-			rgxStr += `(?=.*[@#$%^&*\-_+=!?(){}[\]])`
+			rgxStr = `[@#$%^&*\-_+=!?(){}[\]]`
 			bodyMsg += " 1 special character"
 		}
-	}
-	rgxStr += ".*$"
 
-	doesMatch, err := regexp.MatchString(rgxStr, str)
-	if err != nil {
-		return err
-	} else if doesMatch {
+		if doesMatch {
+			rgx := regexp.MustCompile(rgxStr)
+			doesMatch = rgx.MatchString(str)
+		}
+	}
+
+	if doesMatch {
 		return nil
 	}
 
