@@ -199,10 +199,19 @@ func (c *Controller) AddPagination() *Controller {
 	return c
 }
 
-func (c *Controller) AddHeader(header string) *Controller {
+// Get header. Field is the name used in input; if omitted, it is used the same
+// header name.
+func (c *Controller) AddHeader(header string, field ...string) *Controller {
+	var fieldName string
+	if len(field) == 0 {
+		fieldName = header
+	} else {
+		fieldName = field[0]
+	}
+
 	headerValue := c.req.Header.Get(header)
 
-	c.fields[header] = headerValue
+	c.fields[fieldName] = headerValue
 	return c
 }
 
