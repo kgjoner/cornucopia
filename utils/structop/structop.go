@@ -132,6 +132,10 @@ func (s structop) Map() map[string]interface{} {
 	typ := v.Type()
 	for i := 0; i < v.NumField(); i++ {
 		fi := typ.Field(i)
+		if !fi.IsExported() {
+			continue
+		}
+
 		maps[fi.Name] = v.Field(i).Interface()
 	}
 
