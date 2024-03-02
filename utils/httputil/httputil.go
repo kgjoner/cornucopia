@@ -5,14 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 )
 
 type HttpUtil struct {
-	client  *http.Client
-	baseUrl string
+	client         *http.Client
+	baseUrl        string
+	defaultOptions *Options
 }
 
 func New(baseUrl string) *HttpUtil {
@@ -27,96 +29,59 @@ type Options struct {
 	Headers map[string]string
 }
 
+func (u *HttpUtil) SetDefaultOptions(opt *Options) {
+	u.defaultOptions = opt
+}
+
 type Executer func(data any) (*http.Response, error)
 
 func (u HttpUtil) Get(path string, opt *Options) Executer {
-	req, err := http.NewRequest("GET", u.baseUrl+path, nil)
-	if err != nil {
-		panic(err)
-	}
-
-	if opt != nil {
-		SetOptions(req, *opt)
-	}
-
-	return func(data any) (*http.Response, error) {
-		return DoReq(u.client, req, data)
-	}
+	return u.request("GET", path, nil, opt)
 }
 
 func (u HttpUtil) Delete(path string, opt *Options) Executer {
-	req, err := http.NewRequest("DELETE", u.baseUrl+path, nil)
-	if err != nil {
-		panic(err)
-	}
-
-	if opt != nil {
-		SetOptions(req, *opt)
-	}
-
-	return func(data any) (*http.Response, error) {
-		return DoReq(u.client, req, data)
-	}
+	return u.request("DELETE", path, nil, opt)
 }
 
-func (u HttpUtil) Post(path string, body map[string]string, opt *Options) Executer {
-	jsonBody, err := json.Marshal(body)
-	if err != nil {
-		panic(err)
-	}
-
-	req, err := http.NewRequest("POST", u.baseUrl+path, bytes.NewBuffer(jsonBody))
-	if err != nil {
-		panic(err)
-	}
-
-	if opt != nil {
-		SetOptions(req, *opt)
-	}
-	
-	req.Header.Add("content-type", "application/json")
-	return func(data any) (*http.Response, error) {
-		return DoReq(u.client, req, data)
-	}
+func (u HttpUtil) Post(path string, body map[string]any, opt *Options) Executer {
+	return u.request("POST", path, body, opt)
 }
 
-func (u HttpUtil) Put(path string, body map[string]string, opt *Options) Executer {
-	jsonBody, err := json.Marshal(body)
-	if err != nil {
-		panic(err)
-	}
-
-	req, err := http.NewRequest("PUT", u.baseUrl+path, bytes.NewBuffer(jsonBody))
-	if err != nil {
-		panic(err)
-	}
-
-	if opt != nil {
-		SetOptions(req, *opt)
-	}
-
-	req.Header.Add("content-type", "application/json")
-	return func(data any) (*http.Response, error) {
-		return DoReq(u.client, req, data)
-	}
+func (u HttpUtil) Put(path string, body map[string]any, opt *Options) Executer {
+	return u.request("PUT", path, body, opt)
 }
 
-func (u HttpUtil) Patch(path string, body map[string]string, opt *Options) Executer {
-	jsonBody, err := json.Marshal(body)
+func (u HttpUtil) Patch(path string, body map[string]any, opt *Options) Executer {
+	return u.request("PATCH", path, body, opt)
+}
+
+func (u HttpUtil) request(method string, path string, inputtedBody map[string]any, opt *Options) Executer {
+	var body io.Reader = nil
+	if inputtedBody != nil {
+		jsonBody, err := json.Marshal(inputtedBody)
+		if err != nil {
+			panic(err)
+		}
+		body = bytes.NewBuffer(jsonBody)
+	}
+
+	req, err := http.NewRequest(method, u.baseUrl+path, body)
 	if err != nil {
 		panic(err)
 	}
 
-	req, err := http.NewRequest("PATCH", u.baseUrl+path, bytes.NewBuffer(jsonBody))
-	if err != nil {
-		panic(err)
+	if u.defaultOptions != nil {
+		SetOptions(req, *u.defaultOptions)
 	}
 
 	if opt != nil {
 		SetOptions(req, *opt)
 	}
 
-	req.Header.Add("content-type", "application/json")
+	if body != nil {
+		req.Header.Add("content-type", "application/json")
+	}
+
 	return func(data any) (*http.Response, error) {
 		return DoReq(u.client, req, data)
 	}
@@ -156,7 +121,7 @@ func DoReq(client *http.Client, req *http.Request, data any) (*http.Response, er
 			"ResponseStatus": errors.New(fmt.Sprintln(res.StatusCode)),
 			"ResponseBody":   errors.New(fmt.Sprintln(bodyErr)),
 		})
-		
+
 		return res, err
 	}
 
