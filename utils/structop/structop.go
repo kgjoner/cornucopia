@@ -337,11 +337,11 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 		rawString := bytes.NewBuffer(byteArr).String()
 		return setValue(target, reflect.ValueOf(rawString), opt)
 
-	} else if nullStr, ok := edited.Interface().(sql.NullString); ok && target.Kind() == reflect.String {
+	} else if nullStr, ok := edited.Interface().(sql.NullString); ok {
 		if nullStr.Valid {
-			edited = reflect.ValueOf(nullStr.String)
+			setValue(target, reflect.ValueOf(nullStr.String), opt)
 		} else {
-			edited = reflect.ValueOf("")
+			setValue(target, reflect.ValueOf(""), opt)
 		}
 
 	} else if nullRawMsg, ok := edited.Interface().(pqtype.NullRawMessage); ok {
