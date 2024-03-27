@@ -4,51 +4,41 @@ import (
 	"strings"
 
 	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/utils/sanitizer"
 )
 
 type PhoneNumber string
 
-func ParsePhoneNumber(str string) (PhoneNumber, error) {
-	if str == "" {
-		return PhoneNumber(""), nil
-	}
-
-	j := 0
-	parsedBytes := []byte(str)
-	for _, b := range parsedBytes {
-		if '0' <= b && b <= '9' {
-			parsedBytes[j] = b
-			j++
-		}
-	}
-
-	res := PhoneNumber("+" + string(parsedBytes[:j]))
-	return res, res.IsValid()
+func ParsePhoneNumber(str string) (*PhoneNumber, error) {
+	res := PhoneNumber(str)
+	return &res, res.IsValid()
 }
 
-func (p PhoneNumber) IsValid() error {
-	if p == "" {
+func (p *PhoneNumber) IsValid() error {
+	if p.IsZero() {
 		return nil
 	}
 
-	_, err := p.Parts()
+	_, err := p.Format()
 	return err
 }
 
-type PhoneNumberParts struct {
+type FormattedPhoneNumber struct {
 	CountryCode string
 	AreaCode    string
 	Number      string
 }
 
-func (p PhoneNumber) Parts() (*PhoneNumberParts, error) {
-	s := string(p)
+func (p *PhoneNumber) Format() (*FormattedPhoneNumber, error) {
+	s := "+" + sanitizer.Digit(p.String())
+	*p = PhoneNumber(s)
+
 	if strings.HasPrefix(s, "+55") {
 		if len(s) < 13 && len(s) > 14 {
 			return nil, normalizederr.NewValidationError("Invalid length for Brazil phone.")
 		}
 
-		return &PhoneNumberParts{
+		return &FormattedPhoneNumber{
 			CountryCode: s[1:3],
 			AreaCode:    s[3:5],
 			Number:      s[5:],
@@ -59,7 +49,7 @@ func (p PhoneNumber) Parts() (*PhoneNumberParts, error) {
 			return nil, normalizederr.NewValidationError("Invalid length for US phone.")
 		}
 
-		return &PhoneNumberParts{
+		return &FormattedPhoneNumber{
 			CountryCode: s[1:2],
 			AreaCode:    s[2:5],
 			Number:      s[5:],
