@@ -105,10 +105,10 @@ func SetOptions(req *http.Request, opt Options) {
 
 func DoReq(client *http.Client, req *http.Request, data any) (*http.Response, error) {
 	res, err := client.Do(req)
-	defer res.Body.Close()
 	if err != nil {
-		return res, err
+		return nil, err
 	}
+	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
 		var bodyErr map[string]any
