@@ -215,6 +215,11 @@ func (c *Controller) AddHeader(header string, field ...string) *Controller {
 	return c
 }
 
+func (c *Controller) AddIp() *Controller {
+	c.fields["ip"] = c.req.RemoteAddr
+	return c
+}
+
 func (c *Controller) AddMarket() *Controller {
 	timezone := c.req.Header.Get("x-timezone")
 	market, err := htypes.MarketByTimezone(timezone)
