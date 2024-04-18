@@ -14,107 +14,161 @@ type NormalizedError struct {
 	msgMap  map[string]string
 }
 
-func NewValidationError(message string) NormalizedError {
+func NewValidationError(message string, code ...string) NormalizedError {
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = UnprocessableEntity
+	}
+
 	return NormalizedError{
 		message,
 		"Validation",
-		"",
+		effectiveCode,
 		getStack(),
 		nil,
 	}
 }
 
-func NewValidationErrorFromMap(errorMap map[string]error) NormalizedError {
+func NewValidationErrorFromMap(errorMap map[string]error, code ...string) NormalizedError {
 	message := "{ "
 	msgMap := map[string]string{}
 	for k, v := range errorMap {
-		if v != nil {
+		if v != nil {			
 			message += fmt.Sprintf("%v: %v \n", k, v)
 			msgMap[k] = v.Error()
 		}
 	}
 	message += " }"
 
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = UnprocessableEntity
+	}
+
 	return NormalizedError{
 		message,
 		"Validation",
-		"",
+		effectiveCode,
 		getStack(),
 		msgMap,
 	}
 }
 
-func NewRequestError(message string, code string) NormalizedError {
+func NewRequestError(message string, code ...string) NormalizedError {
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = BadRequest
+	}
+
 	return NormalizedError{
 		message,
 		"Request",
-		code,
+		effectiveCode,
 		getStack(),
 		nil,
 	}
 }
 
-func NewForbiddenError(message string) NormalizedError {
+func NewForbiddenError(message string, code ...string) NormalizedError {
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = Forbidden
+	}
+
 	return NormalizedError{
 		message,
 		"Forbidden",
-		"0002002",
+		effectiveCode,
 		getStack(),
 		nil,
 	}
 }
 
-func NewUnauthorizedError(message string) NormalizedError {
+func NewUnauthorizedError(message string, code ...string) NormalizedError {
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = Unauthenticated
+	}
+
 	return NormalizedError{
 		message,
 		"Unauthorized",
-		"0002001",
+		effectiveCode,
 		getStack(),
 		nil,
 	}
 }
 
-func NewFatalUnauthorizedError(message string) NormalizedError {
+func NewFatalUnauthorizedError(message string, code ...string) NormalizedError {
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = Unauthenticated
+	}
+
 	return NormalizedError{
 		message,
 		"FatalUnauthorized",
-		"0002001",
+		effectiveCode,
 		getStack(),
 		nil,
 	}
 }
 
-func NewFatalInternalError(message string) NormalizedError {
+func NewFatalInternalError(message string, code ...string) NormalizedError {
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = Unexpected
+	}
+
 	return NormalizedError{
 		message,
 		"FatalInternal",
-		"",
+		effectiveCode,
 		getStack(),
 		nil,
 	}
 }
 
-func NewExternalError(mainMsg string, complMsg map[string]error) NormalizedError {
+func NewExternalError(mainMsg string, complMsg map[string]error, code ...string) NormalizedError {
 	message := fmt.Sprintf("{\nmain: %v \n", mainMsg)
 	msgMap := map[string]string{
 		"main": mainMsg,
 	}
 
-	if complMsg != nil {
-		for k, v := range complMsg {
-			if v != nil {
-				message += fmt.Sprintf("%v: %v \n", k, v)
-				msgMap[k] = v.Error()
-			}
+	for k, v := range complMsg {
+		if v != nil {
+			message += fmt.Sprintf("%v: %v \n", k, v)
+			msgMap[k] = v.Error()
 		}
 	}
 
 	message += " }"
 
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = Unexpected
+	}
+
 	return NormalizedError{
 		message,
 		"External",
-		"",
+		effectiveCode,
 		getStack(),
 		msgMap,
 	}
@@ -127,9 +181,9 @@ func (e NormalizedError) Error() string {
 func (e NormalizedError) MarshalJSON() ([]byte, error) {
 	if e.msgMap != nil && len(e.msgMap) > 0 {
 		payload := struct {
-			Message map[string]string
-			Kind    string
-			Code    string
+			Message map[string]string `json:"message"`
+			Kind    string            `json:"kind"`
+			Code    string            `json:"code"`
 		}{
 			e.msgMap,
 			e.Kind,
@@ -140,9 +194,9 @@ func (e NormalizedError) MarshalJSON() ([]byte, error) {
 	}
 
 	payload := struct {
-		Message string
-		Kind    string
-		Code    string
+		Message string `json:"message"`
+		Kind    string `json:"kind"`
+		Code    string `json:"code"`
 	}{
 		e.Message,
 		e.Kind,
@@ -152,7 +206,7 @@ func (e NormalizedError) MarshalJSON() ([]byte, error) {
 }
 
 func getStack() string {
-	stackSlice := make([]byte, 512)	
+	stackSlice := make([]byte, 512)
 	s := runtime.Stack(stackSlice, false)
-	return fmt.Sprintf("%s", stackSlice[0:s])
+	return string(stackSlice[0:s])
 }
