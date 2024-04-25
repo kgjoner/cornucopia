@@ -107,7 +107,8 @@ func (s structop) Keys() []string {
 	return keys
 }
 
-// List struct fields names.
+// List struct fields names accordingly to their json tag. If marked with "-", field is skipped. 
+// If no json tag is provided, field name appears.
 func (s structop) JsonKeys() []string {
 	keys := []string{}
 	v := reflect.ValueOf(s.value)
@@ -115,8 +116,10 @@ func (s structop) JsonKeys() []string {
 	for i := 0; i < v.NumField(); i++ {
 		jsonTag := typ.Field(i).Tag.Get("json")
 		jsonKey := strings.Split(jsonTag, ",")[0]
-		if jsonKey == "" || jsonKey == "-" {
+		if jsonKey == "-" {
 			continue
+		} else if jsonKey == "" {
+			jsonKey = typ.Field(i).Name
 		}
 
 		keys = append(keys, jsonKey)
