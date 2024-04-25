@@ -19,7 +19,7 @@ func NewValidationError(message string, code ...string) NormalizedError {
 	if len(code) >= 1 {
 		effectiveCode = code[0]
 	} else {
-		effectiveCode = UnprocessableEntity
+		effectiveCode = InvalidData
 	}
 
 	return NormalizedError{
@@ -46,7 +46,7 @@ func NewValidationErrorFromMap(errorMap map[string]error, code ...string) Normal
 	if len(code) >= 1 {
 		effectiveCode = code[0]
 	} else {
-		effectiveCode = UnprocessableEntity
+		effectiveCode = InvalidData
 	}
 
 	return NormalizedError{
@@ -80,7 +80,7 @@ func NewForbiddenError(message string, code ...string) NormalizedError {
 	if len(code) >= 1 {
 		effectiveCode = code[0]
 	} else {
-		effectiveCode = Forbidden
+		effectiveCode = NotAllowed
 	}
 
 	return NormalizedError{
@@ -120,6 +120,23 @@ func NewFatalUnauthorizedError(message string, code ...string) NormalizedError {
 	return NormalizedError{
 		message,
 		"FatalUnauthorized",
+		effectiveCode,
+		getStack(),
+		nil,
+	}
+}
+
+func NewConflictError(message string, code ...string) NormalizedError {
+	var effectiveCode string
+	if len(code) >= 1 {
+		effectiveCode = code[0]
+	} else {
+		effectiveCode = Inconsistency
+	}
+
+	return NormalizedError{
+		message,
+		"Conflict",
 		effectiveCode,
 		getStack(),
 		nil,

@@ -59,6 +59,9 @@ func HttpError(err error, w http.ResponseWriter, r *http.Request) {
 		case "Validation":
 			status = http.StatusUnprocessableEntity
 			logLevel = log.WarnLevel
+		case "Conflict":
+			status = http.StatusConflict
+			logLevel = log.ErrorLevel
 		case "External":
 			status = http.StatusBadGateway
 			logLevel = log.ErrorLevel
