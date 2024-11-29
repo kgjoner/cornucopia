@@ -35,6 +35,10 @@ func (m *Media) IsValid() error {
 	return nil
 }
 
+func (m Media) IsZero() bool {
+	return reflect.ValueOf(m.file).IsZero()
+}
+
 // Set optional props that may be used for media service.
 func (m *Media) Config(id string, kind string) {
 	m.id = id
