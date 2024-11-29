@@ -2,7 +2,6 @@ package htypes
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/kgjoner/cornucopia/helpers/normalizederr"
@@ -156,7 +155,7 @@ func (p PriceValues) IsValid() error {
 	errs := make(map[string]error)
 
 	if p.SalePrice > p.FullPrice {
-		errs["SalePrice"] = errors.New("Must not be higher than full price.")
+		errs["SalePrice"] = fmt.Errorf("must not be higher than full price")
 	}
 
 	if len(errs) != 0 {

@@ -1,7 +1,6 @@
 package htypes
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -26,7 +25,7 @@ func (e Email) IsValid() error {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must be a valid email.")
+	msg := "must be a valid email"
 	return normalizederr.NewValidationError(msg)
 }
 

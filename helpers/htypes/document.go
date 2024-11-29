@@ -36,7 +36,7 @@ func (d *Document) IsValid() error {
 	case "passport":
 		return validatePassport(formatted.Number)
 	default:
-		return normalizederr.NewValidationError("Not accepted document kind.")
+		return normalizederr.NewValidationError("not accepted document kind")
 	}
 }
 
@@ -64,7 +64,7 @@ func (d *Document) Format() (*FormattedDocument, error) {
 		case 14:
 			parts[0] = "cnpj"
 		default:
-			return nil, normalizederr.NewValidationError("Unrecognizable document. Try to inform its type in the form {type}:{number}.")
+			return nil, normalizederr.NewValidationError("unrecognizable document: try to inform its type in the form {type}:{number}")
 		}
 
 		*d = Document(fmt.Sprintf("%v:%v", parts[0], parts[1]))
@@ -83,7 +83,7 @@ func (d *Document) Format() (*FormattedDocument, error) {
 
 func validateCpf(cpf string) error {
 	if len(cpf) != 11 {
-		return normalizederr.NewValidationError("Invalid CPF")
+		return normalizederr.NewValidationError("invalid CPF")
 	}
 
 	// Exclude invalid numbers
@@ -100,7 +100,7 @@ func validateCpf(cpf string) error {
 		"99999999999",
 	}
 	if sliceman.IndexOf(invalidNumbers, cpf) != -1 {
-		return normalizederr.NewValidationError("Invalid CPF")
+		return normalizederr.NewValidationError("invalid CPF")
 	}
 
 	// First verification digit
@@ -117,7 +117,7 @@ func validateCpf(cpf string) error {
 
 	verDig, _ := strconv.Atoi(string(cpf[9]))
 	if rev != verDig {
-		return normalizederr.NewValidationError("Invalid CPF")
+		return normalizederr.NewValidationError("invalid CPF")
 	}
 
 	// Second verification digit
@@ -134,7 +134,7 @@ func validateCpf(cpf string) error {
 
 	verDig, _ = strconv.Atoi(string(cpf[10]))
 	if rev != verDig {
-		return normalizederr.NewValidationError("Invalid CPF")
+		return normalizederr.NewValidationError("invalid CPF")
 	}
 
 	return nil
@@ -142,7 +142,7 @@ func validateCpf(cpf string) error {
 
 func validateCnpj(cnpj string) error {
 	if len(cnpj) != 14 {
-		return normalizederr.NewValidationError("Invalid CNPJ")
+		return normalizederr.NewValidationError("invalid CNPJ")
 	}
 
 	// Exclude invalid numbers
@@ -159,7 +159,7 @@ func validateCnpj(cnpj string) error {
 		"99999999999999",
 	}
 	if sliceman.IndexOf(invalidNumbers, cnpj) != -1 {
-		return normalizederr.NewValidationError("Invalid CNPJ")
+		return normalizederr.NewValidationError("invalid CNPJ")
 	}
 
 	// First verification digit
@@ -181,7 +181,7 @@ func validateCnpj(cnpj string) error {
 
 	verDig, _ := strconv.Atoi(string(cnpj[12]))
 	if rev != verDig {
-		return normalizederr.NewValidationError("Invalid CNPJ")
+		return normalizederr.NewValidationError("invalid CNPJ")
 	}
 
 	// Second verification digit
@@ -203,7 +203,7 @@ func validateCnpj(cnpj string) error {
 
 	verDig, _ = strconv.Atoi(string(cnpj[13]))
 	if rev != verDig {
-		return normalizederr.NewValidationError("Invalid CNPJ")
+		return normalizederr.NewValidationError("invalid CNPJ")
 	}
 
 	return nil

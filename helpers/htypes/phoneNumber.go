@@ -35,7 +35,7 @@ func (p *PhoneNumber) Format() (*FormattedPhoneNumber, error) {
 
 	if strings.HasPrefix(s, "+55") {
 		if len(s) < 13 && len(s) > 14 {
-			return nil, normalizederr.NewValidationError("Invalid length for Brazil phone.")
+			return nil, normalizederr.NewValidationError("invalid length for Brazil phone")
 		}
 
 		return &FormattedPhoneNumber{
@@ -46,7 +46,7 @@ func (p *PhoneNumber) Format() (*FormattedPhoneNumber, error) {
 
 	} else if strings.HasPrefix(s, "+1") {
 		if len(s) != 12 {
-			return nil, normalizederr.NewValidationError("Invalid length for US phone.")
+			return nil, normalizederr.NewValidationError("invalid length for US phone")
 		}
 
 		return &FormattedPhoneNumber{
@@ -56,7 +56,7 @@ func (p *PhoneNumber) Format() (*FormattedPhoneNumber, error) {
 		}, nil
 	}
 
-	return nil, normalizederr.NewValidationError("Phone out of region.")
+	return nil, normalizederr.NewValidationError("phone out of region")
 }
 
 func (a PhoneNumber) IsZero() bool {

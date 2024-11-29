@@ -17,7 +17,7 @@ func (c Country) IsValid() error {
 
 	_, exists := countriesMap[string(c)]
 	if !exists {
-		return normalizederr.NewValidationError("Country does not exist.")
+		return normalizederr.NewValidationError("country does not exist")
 	}
 
 	return nil

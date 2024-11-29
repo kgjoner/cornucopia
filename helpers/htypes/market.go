@@ -18,7 +18,7 @@ type marketValues struct {
 func MarketByTimezone(timezone string) (Market, error) {
 	if timezone == "" {
 		// TODO: add error code
-		return "", normalizederr.NewRequestError("No timezone specified", "")
+		return "", normalizederr.NewRequestError("no timezone specified", "")
 	}
 
 	data, _ := ioutil.ReadFile("./pkg/domains/shop/shoptyp/assets/marketByTimezone.json")
@@ -29,7 +29,7 @@ func MarketByTimezone(timezone string) (Market, error) {
 	market, exists := marketsMap[timezone]
 	if !exists {
 		// TODO: add error code
-		return "", normalizederr.NewRequestError("Invalid timezone", "")
+		return "", normalizederr.NewRequestError("invalid timezone", "")
 	}
 
 	return Market(market), nil
@@ -44,7 +44,7 @@ func MarketByCurrency(currency Currency) (Market, error) {
 	market, exists := marketByCurrency[currency]
 	if !exists {
 		// TODO: add error code
-		return "", normalizederr.NewRequestError("Invalid currency", "")
+		return "", normalizederr.NewRequestError("invalid currency", "")
 	}
 
 	return market, nil
