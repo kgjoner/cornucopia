@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -13,7 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/kgjoner/cornucopia/helpers/htypes"
 	"github.com/kgjoner/cornucopia/services/media"
-	"github.com/sqlc-dev/pqtype"
 )
 
 type structop struct {
@@ -179,7 +178,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 	}
 
 	if !target.CanSet() {
-		return errors.New("Target cannot be set. It may be unadressable or a private field.")
+		return fmt.Errorf("target cannot be set, it may be unadressable or a private field")
 	}
 
 	shouldSetDeeply := target.Kind() == reflect.Struct && shouldSkipZeroValue &&
@@ -207,7 +206,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 		}
 	}
 
-	if edited.Type() == reflect.TypeOf(pqtype.NullRawMessage{}) {
+	if edited.Type() == reflect.TypeOf(htypes.NullRawMessage{}) {
 		edited = edited.FieldByName("RawMessage")
 		return setValue(target, edited, opt)
 	}
@@ -347,7 +346,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 			setValue(target, reflect.ValueOf(""), opt)
 		}
 
-	} else if nullRawMsg, ok := edited.Interface().(pqtype.NullRawMessage); ok {
+	} else if nullRawMsg, ok := edited.Interface().(htypes.NullRawMessage); ok {
 		rawString := bytes.NewBuffer(nullRawMsg.RawMessage).String()
 		return setValue(target, reflect.ValueOf(rawString), opt)
 	}
@@ -371,7 +370,7 @@ func CopySlice[T, K any](original []T, target *[]K) error {
 	targetV := reflect.Indirect(reflect.ValueOf(target))
 
 	if targetV.Kind() != originalV.Kind() {
-		return errors.New("Kinds must be the same to copy.")
+		return fmt.Errorf("kinds must be the same to copy")
 	}
 
 	if originalV.Kind() == reflect.Array || originalV.Kind() == reflect.Slice {
@@ -465,7 +464,7 @@ func copyMap(original reflect.Value, target reflect.Value) error {
 				}
 
 			} else {
-				return errors.New("Cannot convert keys.")
+				return fmt.Errorf("cannot convert keys")
 			}
 		}
 

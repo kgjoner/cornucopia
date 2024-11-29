@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/sqlc-dev/pqtype"
+	"github.com/kgjoner/cornucopia/helpers/htypes"
 )
 
 func ToRawMessage(obj interface{}) json.RawMessage {
@@ -32,13 +32,13 @@ func ToRawMessageSlice[T any](objSlc []T) []json.RawMessage {
 	return res
 }
 
-func ToNullRawMessage(obj interface{}) pqtype.NullRawMessage {
+func ToNullRawMessage(obj interface{}) htypes.NullRawMessage {
 	data, err := json.Marshal(obj)
 	if err != nil {
 		panic(err)
 	}
 
-	return pqtype.NullRawMessage{
+	return htypes.NullRawMessage{
 		RawMessage: json.RawMessage(data),
 		Valid:      len(data) != 0,
 	}
