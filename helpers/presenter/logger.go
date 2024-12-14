@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/kgjoner/cornucopia/helpers/controller"
 	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 	"github.com/kgjoner/cornucopia/services/media"
-	"github.com/kgjoner/cornucopia/utils/sliceman"
 	"github.com/kgjoner/cornucopia/utils/structop"
 	log "github.com/sirupsen/logrus"
 )
@@ -15,7 +15,7 @@ import (
 func NewLogger(r *http.Request, data interface{}) *log.Entry {
 	ctx := r.Context()
 
-	actor := ctx.Value("actor")
+	actor := ctx.Value(controller.ActorKey)
 	actorV := reflect.ValueOf(actor)
 	actorMap := map[string]interface{}{}
 	if actorV.IsValid() && !actorV.IsZero() {
@@ -23,9 +23,9 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 	}
 
 	if err, ok := data.(error); ok {
-		input, ok := ctx.Value("input").(map[string]any)
+		input, ok := ctx.Value(controller.InputKey).(map[string]any)
 		if ok {
-			removePrivateInputs(&input)
+			removePrivateInputs(input)
 		}
 
 		if normErr, ok := err.(normalizederr.NormalizedError); ok {
@@ -66,20 +66,38 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 	})
 }
 
-func removePrivateInputs(input *map[string]any) {
+func removePrivateInputs(input map[string]any) {
 	privateInput := []string{
 		"password",
+		"secret",
 		"paymentcard",
 		"actor",
 		"token",
 	}
 
-	for key, value := range *input {
+	for key, value := range input {
 		normalizedKey := strings.ReplaceAll(strings.ToLower(key), "_", "")
-		if sliceman.IndexOf(privateInput, normalizedKey) != -1 {
-			delete(*input, key)
+		if containsAny(normalizedKey, privateInput) {
+			delete(input, key)
 		} else if _, ok := value.(media.Media); ok {
-			delete(*input, key)
+			delete(input, key)
+		}
+
+		if reflect.TypeOf(value).Kind() == reflect.Struct {
+			vmap := structop.New(value).Map()
+			if id, exists := vmap["Id"]; exists {
+				input[key] = id
+			}
 		}
 	}
+}
+
+func containsAny(key string, slc []string,) bool {
+	for _, str := range slc {
+		if strings.Contains(key, str) {
+			return true
+		}
+	}
+
+	return false
 }

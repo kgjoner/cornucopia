@@ -17,6 +17,16 @@ import (
 	"github.com/kgjoner/cornucopia/utils/structop"
 )
 
+type ctxKey int
+
+const (
+	ApplicationKey ctxKey = iota
+	ActorKey
+	TargetKey
+	TokenKey
+	InputKey
+)
+
 type Controller struct {
 	req    *http.Request
 	fields map[string]any
@@ -35,7 +45,7 @@ func (c *Controller) AddToken() *Controller {
 		return c
 	}
 
-	token, ok := c.req.Context().Value("token").(string)
+	token, ok := c.req.Context().Value(TokenKey).(string)
 	if !ok {
 		c.err = normalizederr.NewUnauthorizedError("Token required.")
 		return c
@@ -50,7 +60,7 @@ func (c *Controller) AddActor() *Controller {
 		return c
 	}
 
-	actor := c.req.Context().Value("actor")
+	actor := c.req.Context().Value(ActorKey)
 	if actor == nil {
 		c.err = normalizederr.NewUnauthorizedError("Actor required.")
 		return c
@@ -60,12 +70,27 @@ func (c *Controller) AddActor() *Controller {
 	return c
 }
 
+func (c *Controller) AddTarget() *Controller {
+	if c.err != nil {
+		return c
+	}
+
+	target := c.req.Context().Value(TargetKey)
+	if target == nil {
+		c.err = normalizederr.NewUnauthorizedError("Target required.")
+		return c
+	}
+
+	c.fields["target"] = target
+	return c
+}
+
 func (c *Controller) AddApplication() *Controller {
 	if c.err != nil {
 		return c
 	}
 
-	application := c.req.Context().Value("application")
+	application := c.req.Context().Value(ApplicationKey)
 	if application == nil {
 		c.err = normalizederr.NewUnauthorizedError("Application required.")
 		return c
@@ -81,7 +106,7 @@ func (c *Controller) ParseActorAs(setFields func(actor any, fields map[string]an
 		return c
 	}
 
-	actor := c.req.Context().Value("actor")
+	actor := c.req.Context().Value(ActorKey)
 	if actor == nil {
 		c.err = normalizederr.NewUnauthorizedError("Actor required.")
 		return c
@@ -278,7 +303,7 @@ func (c *Controller) AddLanguages() *Controller {
 
 func (c *Controller) Write(input any) error {
 	ctx := c.req.Context()
-	ctx = context.WithValue(ctx, "input", c.fields)
+	ctx = context.WithValue(ctx, InputKey, c.fields)
 	*(c.req) = *c.req.WithContext(ctx)
 
 	if c.err != nil {
