@@ -1,6 +1,7 @@
 package presenter
 
 import (
+	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
@@ -26,6 +27,10 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 		input, ok := ctx.Value(controller.InputKey).(map[string]any)
 		if ok {
 			removePrivateInputs(input)
+		}
+
+		if len(actorMap) == 0 && input["Application"] != nil {
+			actorMap["Id"] = fmt.Sprintf("Application[%v]", input["Application"])
 		}
 
 		if normErr, ok := err.(normalizederr.NormalizedError); ok {
@@ -83,7 +88,7 @@ func removePrivateInputs(input map[string]any) {
 			delete(input, key)
 		}
 
-		if reflect.TypeOf(value).Kind() == reflect.Struct {
+		if v := reflect.ValueOf(value); v.IsValid() && !v.IsZero() && v.Kind() == reflect.Struct {
 			vmap := structop.New(value).Map()
 			if id, exists := vmap["Id"]; exists {
 				input[key] = id
