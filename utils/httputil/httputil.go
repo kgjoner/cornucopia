@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 )
@@ -19,7 +20,9 @@ type HttpUtil struct {
 
 func New(baseUrl string) *HttpUtil {
 	return &HttpUtil{
-		client:  &http.Client{},
+		client:  &http.Client{
+			Timeout: 60 * time.Second,
+		},
 		baseUrl: baseUrl,
 	}
 }
