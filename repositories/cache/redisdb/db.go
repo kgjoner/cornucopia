@@ -1,4 +1,4 @@
-package cacherepo
+package redisdb
 
 import (
 	"context"
@@ -32,13 +32,13 @@ func (p Pool) Client() *redis.Client {
 	return p.db
 }
 
-type Queries struct {
+type DAO struct {
 	ctx context.Context
 	db  *redis.Client
 }
 
-func (p Pool) NewQueries(ctx context.Context) *Queries {
-	return &Queries{
+func (p Pool) NewDAO(ctx context.Context) *DAO {
+	return &DAO{
 		ctx: ctx,
 		db:  p.db,
 	}
