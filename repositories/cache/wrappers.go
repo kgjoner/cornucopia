@@ -5,6 +5,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/kgjoner/cornucopia/utils/hash"
 )
 
 // Check for a cached result of F, if no hit, run it. F must return (*R, error).
@@ -12,7 +14,7 @@ func RunWithCache[R any, F any](q DAO, duration time.Duration, fn F) F {
 	fnName := getFuncName(fn)
 
 	wrapped := func(args ...any) (result R, err error) {
-		key := fnName + ":" + hashArgs(args)
+		key := fnName + ":" + hash.From(args...)
 
 		err = q.GetJson(key, &result)
 		if err != ErrNil {
