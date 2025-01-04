@@ -166,7 +166,7 @@ func slug(str string, _ []string) error {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must have only alphanumeric characters, hyphen and underscore")
+	msg := "Must have only alphanumeric characters, hyphen and underscore"
 	return normalizederr.NewValidationError(msg)
 }
 
@@ -176,7 +176,7 @@ func uri(str string, _ []string) error {
 	}
 
 	doesMatch, err := regexp.MatchString(
-		`^[A-Za-z]+:\/\/[\w-]+(\.[\w-]+)+(:\d+)?(\/[\w-]+)*(\?\w+=[\w%]+(&\w+=[\w%]+)*)?$`,
+		`^[A-Za-z]+:\/\/[\w-]+(\.[\w-]+)+(:\d+)?(\/[\w-]+)*(\.[\w]+)?(\?\w+=[\w%]+(&\w+=[\w%]+)*)?$`,
 		str,
 	)
 	if err != nil {
@@ -185,7 +185,7 @@ func uri(str string, _ []string) error {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must have a valid uri format")
+	msg := "Must have a valid uri format"
 	return normalizederr.NewValidationError(msg)
 }
 
@@ -201,6 +201,6 @@ func wordId(str string, _ []string) error {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must have only letters, numbers and period.")
+	msg := "Must have only letters, numbers and period."
 	return normalizederr.NewValidationError(msg)
 }
