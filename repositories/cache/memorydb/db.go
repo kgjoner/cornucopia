@@ -2,6 +2,8 @@ package memorydb
 
 import (
 	"context"
+
+	"github.com/kgjoner/cornucopia/repositories/cache"
 )
 
 // Simple in memory cache for tests or pocs. It does not implement duration.
@@ -20,7 +22,7 @@ type DAO struct {
 	data map[string]string
 }
 
-func (p Pool) NewDAO(ctx context.Context) *DAO {
+func (p Pool) NewDAO(ctx context.Context) cache.DAO {
 	return &DAO{
 		ctx:  ctx,
 		data: p.data,

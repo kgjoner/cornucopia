@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kgjoner/cornucopia/repositories/cache"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -37,7 +38,7 @@ type DAO struct {
 	db  *redis.Client
 }
 
-func (p Pool) NewDAO(ctx context.Context) *DAO {
+func (p Pool) NewDAO(ctx context.Context) cache.DAO {
 	return &DAO{
 		ctx: ctx,
 		db:  p.db,
