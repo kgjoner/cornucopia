@@ -2,6 +2,7 @@ package validations
 
 import (
 	"fmt"
+	"net/url"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -175,13 +176,10 @@ func uri(str string, _ []string) error {
 		return nil
 	}
 
-	doesMatch, err := regexp.MatchString(
-		`^[A-Za-z]+:\/\/[\w-]+(\.[\w-]+)+(:\d+)?(\/[\w-]+)*(\.[\w]+)?(\?\w+=[\w%]+(&\w+=[\w%]+)*)?$`,
-		str,
-	)
+	u, err := url.Parse(str);
 	if err != nil {
 		return err
-	} else if doesMatch {
+	} else if u.Scheme != "" && u.Host != "" {
 		return nil
 	}
 
