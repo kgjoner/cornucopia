@@ -260,6 +260,12 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 				return err
 			}
 			edited = reflect.ValueOf(uint(num))
+		case reflect.Bool:
+			bl, err := strconv.ParseBool(str)
+			if err != nil {
+			 return err
+			}
+			edited = reflect.ValueOf(bl)
 		}
 
 		switch target.Type() {
