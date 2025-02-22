@@ -175,7 +175,7 @@ func (c *Controller) ParseQueryParam(param string, field ...string) *Controller 
 	}
 
 	query := c.req.URL.Query()
-	qstr := query[fieldName]
+	qstr := query[param]
 	if len(qstr) != 0 {
 		c.fields[fieldName] = qstr[0]
 	}
