@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"runtime"
+	"strconv"
 )
 
 type NormalizedError struct {
@@ -16,7 +17,7 @@ type NormalizedError struct {
 
 func NewValidationError(message string, code ...string) NormalizedError {
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = InvalidData
@@ -43,7 +44,7 @@ func NewValidationErrorFromMap(errorMap map[string]error, code ...string) Normal
 	message += " }"
 
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = InvalidData
@@ -60,7 +61,7 @@ func NewValidationErrorFromMap(errorMap map[string]error, code ...string) Normal
 
 func NewRequestError(message string, code ...string) NormalizedError {
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = BadRequest
@@ -77,7 +78,7 @@ func NewRequestError(message string, code ...string) NormalizedError {
 
 func NewForbiddenError(message string, code ...string) NormalizedError {
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = NotAllowed
@@ -94,7 +95,7 @@ func NewForbiddenError(message string, code ...string) NormalizedError {
 
 func NewUnauthorizedError(message string, code ...string) NormalizedError {
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = Unauthenticated
@@ -111,7 +112,7 @@ func NewUnauthorizedError(message string, code ...string) NormalizedError {
 
 func NewFatalUnauthorizedError(message string, code ...string) NormalizedError {
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = Unauthenticated
@@ -128,7 +129,7 @@ func NewFatalUnauthorizedError(message string, code ...string) NormalizedError {
 
 func NewConflictError(message string, code ...string) NormalizedError {
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = Inconsistency
@@ -145,7 +146,7 @@ func NewConflictError(message string, code ...string) NormalizedError {
 
 func NewFatalInternalError(message string, code ...string) NormalizedError {
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = Unexpected
@@ -176,7 +177,7 @@ func NewExternalError(mainMsg string, complMsg map[string]error, code ...string)
 	message += " }"
 
 	var effectiveCode string
-	if len(code) >= 1 {
+	if len(code) >= 1 && code[0] != "" {
 		effectiveCode = code[0]
 	} else {
 		effectiveCode = Unexpected
@@ -193,6 +194,33 @@ func NewExternalError(mainMsg string, complMsg map[string]error, code ...string)
 
 func (e NormalizedError) Error() string {
 	return e.Message
+}
+
+// Make external errors internal. It returns the unchanged error if it is not external.
+func (e NormalizedError) MakeItInternal() NormalizedError {
+	if e.Kind == "External" {
+		statusStr, ok := e.msgMap["ResponseStatus"]
+		status, err := strconv.Atoi(statusStr)
+		if ok && err == nil {
+			switch {
+			case status == 401:
+				e.Kind = "Unauthorized"
+			case status == 403:
+				e.Kind = "Forbidden"
+			case status == 422:
+				e.Kind = "Validation"
+			case status == 409:
+				e.Kind = "Conflict"
+			case status >= 400 && status < 500:
+				e.Kind = "Request"
+			default:
+				e.Kind = "Internal"
+			}
+		} else {
+			e.Kind = "Internal"
+		}
+	}
+	return e
 }
 
 func (e NormalizedError) MarshalJSON() ([]byte, error) {

@@ -118,12 +118,13 @@ func DoReq(client *http.Client, req *http.Request, data any) (*http.Response, er
 		json.NewDecoder(res.Body).Decode(&bodyErr)
 
 		msg, _ := bodyErr["message"].(string)
+		code, _ := bodyErr["code"].(string)
 		err := normalizederr.NewExternalError(msg, map[string]error{
 			"RequestMethod":  errors.New(req.Method),
 			"RequestUrl":     errors.New(req.URL.String()),
 			"ResponseStatus": errors.New(fmt.Sprintln(res.StatusCode)),
 			"ResponseBody":   errors.New(fmt.Sprintln(bodyErr)),
-		})
+		}, code)
 
 		return res, err
 	}
