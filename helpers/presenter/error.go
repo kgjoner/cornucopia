@@ -73,7 +73,7 @@ func HttpError(err error, w http.ResponseWriter, r *http.Request) {
 			logLevel = log.ErrorLevel
 		}
 	} else {
-		err = normalizederr.NormalizedError{Message: err.Error(), Kind: "Unexpected", Code: "0000001"}
+		err = normalizederr.NormalizedError{Message: err.Error(), Kind: "Unexpected", Code: "UNEXPECTED"}
 		status = http.StatusInternalServerError
 		logLevel = log.ErrorLevel
 	}
