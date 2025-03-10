@@ -122,8 +122,8 @@ func DoReq(client *http.Client, req *http.Request, data any) (*http.Response, er
 		err := normalizederr.NewExternalError(msg, map[string]error{
 			"RequestMethod":  errors.New(req.Method),
 			"RequestUrl":     errors.New(req.URL.String()),
-			"ResponseStatus": errors.New(fmt.Sprintln(res.StatusCode)),
-			"ResponseBody":   errors.New(fmt.Sprintln(bodyErr)),
+			"ResponseStatus": errors.New(fmt.Sprint(res.StatusCode)),
+			"ResponseBody":   errors.New(fmt.Sprint(bodyErr)),
 		}, code)
 
 		return res, err
