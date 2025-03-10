@@ -57,7 +57,8 @@ func Validate(value interface{}, validations ...string) error {
 
 func assertSelfValidation(primitive interface{}) error {
 	p := primitive
-	if v, ok := primitive.(reflect.Value); ok && v.CanInterface() {
+	if v, ok := primitive.(reflect.Value); ok && v.CanInterface() &&
+		(v.Kind() != reflect.Pointer || !v.IsNil()) {
 		p = v.Interface()
 	}
 
