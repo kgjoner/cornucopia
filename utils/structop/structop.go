@@ -182,6 +182,10 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 	}
 
 	if target.Kind() == reflect.Pointer {
+		if target.IsNil() {
+			target.Set(reflect.New(target.Type().Elem()))
+		}
+
 		target = reflect.Indirect(target)
 	}
 
