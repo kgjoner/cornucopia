@@ -28,6 +28,10 @@ func (s *structScan[K]) Scan(value interface{}) error {
 		return nil
 	}
 
+	if s.value == nil {
+		s.value = new(K)
+	}
+
 	if v, ok := value.([]byte); ok {
 		if reflect.Indirect(reflect.ValueOf(s.value)).Kind() != reflect.Struct {
 			return json.Unmarshal(v, &s.value)
