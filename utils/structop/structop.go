@@ -60,8 +60,8 @@ func (s *structop) UpdateViaMap(editedMap map[string]any) error {
 
 	for fieldName, targetFieldV := range targetFields {
 		editedFieldV, exists := editedFields[fieldName]
-		if !exists && targetFieldV.Kind() == reflect.Struct {
-			err := New(targetFieldV.Addr()).UpdateViaMap(editedMap)
+		if !exists && reflect.Indirect(targetFieldV).Kind() == reflect.Struct {
+			err := New(safeAddr(targetFieldV)).UpdateViaMap(editedMap)
 			if err != nil {
 				return err
 			}
@@ -106,7 +106,7 @@ func (s structop) Keys() []string {
 	return keys
 }
 
-// List struct fields names accordingly to their json tag. If marked with "-", field is skipped. 
+// List struct fields names accordingly to their json tag. If marked with "-", field is skipped.
 // If no json tag is provided, field name appears.
 func (s structop) JsonKeys() []string {
 	keys := []string{}
@@ -181,6 +181,14 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 		return fmt.Errorf("target cannot be set, it may be unadressable or a private field")
 	}
 
+	if target.Kind() == reflect.Pointer {
+		target = reflect.Indirect(target)
+	}
+
+	if edited.Kind() == reflect.Pointer {
+		edited = reflect.Indirect(edited)
+	}
+
 	shouldSetDeeply := target.Kind() == reflect.Struct && shouldSkipZeroValue &&
 		target.Type() != reflect.TypeOf(time.Now()) && target.Type() != reflect.TypeOf(media.Media{})
 
@@ -191,10 +199,6 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 
 		target.Set(edited)
 		return nil
-	}
-
-	if edited.Kind() == reflect.Pointer {
-		edited = reflect.Indirect(edited)
 	}
 
 	if edited.Kind() == reflect.Interface {
@@ -263,7 +267,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 		case reflect.Bool:
 			bl, err := strconv.ParseBool(str)
 			if err != nil {
-			 return err
+				return err
 			}
 			edited = reflect.ValueOf(bl)
 		}
@@ -482,4 +486,11 @@ func copyMap(original reflect.Value, target reflect.Value) error {
 
 func normalizeFieldName(name string) string {
 	return strings.ReplaceAll(strings.ToLower(name), "_", "")
+}
+
+func safeAddr(value reflect.Value) reflect.Value {
+	if value.Kind() == reflect.Ptr {
+		return value
+	}
+	return value.Addr()
 }

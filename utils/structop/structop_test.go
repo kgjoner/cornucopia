@@ -189,3 +189,37 @@ func TestCopyWithJson(t *testing.T) {
 	assert.Equal(t, expectedTime, target.Nested.Time)
 	assert.Equal(t, []string{"opt1", "opt2"}, target.Arr)
 }
+
+type SimilarWithPointer struct {
+	Name   string
+	Number int
+	Kind   Kind
+	Time   time.Time
+	Nested *NestedStruct
+}
+
+func TestUpdateViaMapWithPointer(t *testing.T) {
+	editedMap := map[string]any{
+		"name":   "SimilarName",
+		"number": 30,
+		"kind":   Kind("similar-kind"),
+		"time":   time2,
+		"nested": map[string]any{
+			"name": "SimilarNestedName",
+			"time": time.Now(),
+		},
+	}
+
+	target := SimilarWithPointer{Nested: &NestedStruct{}}
+	err := structop.New(&target).UpdateViaMap(editedMap)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	assert.Equal(t, editedMap["name"], target.Name)
+	assert.Equal(t, editedMap["number"], target.Number)
+	assert.Equal(t, editedMap["kind"], target.Kind)
+	assert.Equal(t, editedMap["time"], target.Time)
+	assert.Equal(t, editedMap["nested"].(map[string]any)["name"], target.Nested.Name)
+	assert.Equal(t, editedMap["nested"].(map[string]any)["time"], target.Nested.Time)
+}
