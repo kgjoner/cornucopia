@@ -33,13 +33,19 @@ func (s *structScan[K]) Scan(value interface{}) error {
 	}
 
 	if v, ok := value.([]byte); ok {
-		if reflect.Indirect(reflect.ValueOf(s.value)).Kind() != reflect.Struct {
-			return json.Unmarshal(v, &s.value)
-		}
-
 		var data map[string]any
 		err := json.Unmarshal(v, &data)
 		if err != nil {
+			return err
+		}
+
+		if reflect.Indirect(reflect.ValueOf(s.value)).Kind() == reflect.Pointer {
+			pointer := reflect.Indirect(reflect.ValueOf(s.value))
+			if pointer.IsNil() {
+				pointer.Set(reflect.New(reflect.TypeOf(*s.value).Elem()))
+			}
+
+			err = structop.New(*s.value).UpdateViaMap(data)
 			return err
 		}
 
