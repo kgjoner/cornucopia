@@ -6,7 +6,7 @@ import (
 )
 
 // Do a simple get http request and return a K response data.
-func Get[K any](url string) (data *K, err error) {
+func Get[K any](url string) (*K, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -15,10 +15,11 @@ func Get[K any](url string) (data *K, err error) {
 	client := &http.Client{
 		Timeout: 60 * time.Second,
 	}
-	_, err = DoReq(client, req, data)
+	var data K
+	_, err = DoReq(client, req, &data)
 	if err != nil {
 		return nil, err
 	}
 
-	return data, nil
+	return &data, nil
 }
