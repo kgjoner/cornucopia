@@ -33,6 +33,13 @@ func ToRawMessageSlice[T any](objSlc []T) []json.RawMessage {
 }
 
 func ToNullRawMessage(obj interface{}) htypes.NullRawMessage {
+	if reflect.ValueOf(obj).IsZero() {
+		return htypes.NullRawMessage{
+			RawMessage: nil,
+			Valid:      false,
+		}
+	}
+
 	data, err := json.Marshal(obj)
 	if err != nil {
 		panic(err)
