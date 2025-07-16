@@ -1,22 +1,29 @@
 package htypes
 
 import (
+	_ "embed"
 	"encoding/json"
-	"io/ioutil"
+	"strings"
 
 	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 )
 
 type Country string
 
-func (c Country) IsValid() error {
-	data, _ := ioutil.ReadFile("./pkg/helpers/htypes/assets/countries.json")
+func (c *Country) IsValid() error {
+	if c.IsZero() {
+		return nil
+	}
 
-	var countriesMap map[string]string
-	json.Unmarshal(data, &countriesMap)
-
-	_, exists := countriesMap[string(c)]
+	_, exists := countries[string(*c)]
 	if !exists {
+		for key, name := range countries {
+			if strings.EqualFold(name, string(*c)) {
+				*c = Country(key)
+				return nil
+			}
+		}
+
 		return normalizederr.NewValidationError("country does not exist")
 	}
 
@@ -28,10 +35,21 @@ func (c Country) IsZero() bool {
 }
 
 func (c Country) Name() string {
-	data, _ := ioutil.ReadFile("./assets/countries.json")
+	return countries[string(c)]
+}
 
-	var countriesMap map[string]string
-	json.Unmarshal(data, &countriesMap)
+/* ================================================================================
+	INIT
+================================================================================ */
 
-	return countriesMap[string(c)]
+//go:embed assets/countries.json
+var countriesJSON []byte
+
+var countries map[string]string
+
+func init() {
+	countries = make(map[string]string)
+	if err := json.Unmarshal(countriesJSON, &countries); err != nil {
+		panic("failed to load countries: " + err.Error())
+	}
 }
