@@ -28,9 +28,10 @@ const (
 )
 
 type Controller struct {
-	req    *http.Request
-	fields map[string]any
-	err    error
+	req         *http.Request
+	fields      map[string]any
+	hasJsonBody bool
+	err         error
 }
 
 func New(req *http.Request) *Controller {
@@ -183,6 +184,13 @@ func (c *Controller) ParseQueryParam(param string, field ...string) *Controller 
 	return c
 }
 
+// Mark the controller as having a JSON body. This will unmarshall the body when Write is called.
+func (c *Controller) JsonBody() *Controller {
+	c.hasJsonBody = true
+	return c
+}
+
+// Deprecated: Use JsonBody instead.
 func (c *Controller) ParseBody(fields ...string) *Controller {
 	var bodyMap map[string]any
 	json.NewDecoder(c.req.Body).Decode(&bodyMap)
@@ -302,18 +310,34 @@ func (c *Controller) AddLanguages() *Controller {
 }
 
 func (c *Controller) Write(input any) error {
-	ctx := c.req.Context()
-	ctx = context.WithValue(ctx, InputKey, c.fields)
-	*(c.req) = *c.req.WithContext(ctx)
-
 	if c.err != nil {
+		ctx := c.req.Context()
+		ctx = context.WithValue(ctx, InputKey, c.fields)
+		*(c.req) = *c.req.WithContext(ctx)
 		return c.err
+	}
+
+	if c.hasJsonBody {
+		defer c.req.Body.Close()
+		body, err := io.ReadAll(c.req.Body)
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(body, input)
+		if err != nil {
+			return err
+		}
 	}
 
 	err := structop.New(input).UpdateViaMap(c.fields)
 	if err != nil {
 		return err
 	}
+
+	ctx := c.req.Context()
+	ctx = context.WithValue(ctx, InputKey, input)
+	*(c.req) = *c.req.WithContext(ctx)
 
 	return nil
 }
