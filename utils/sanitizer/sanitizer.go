@@ -13,3 +13,13 @@ func Digit(str string) string {
 
 	return string(parsedBytes[:j])
 }
+
+// Checks if a string contains only digit characters
+func IsDigitOnly(s string) bool {
+	for _, r := range s {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
+}
