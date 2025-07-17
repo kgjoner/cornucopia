@@ -1,11 +1,13 @@
 package htypes
 
 import (
+	_ "embed"
 	"encoding/json"
-	"io/ioutil"
+	"strings"
 
 	"github.com/kgjoner/cornucopia/helpers/i18n"
 	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/validator"
 )
 
 type Market string
@@ -17,19 +19,12 @@ type marketValues struct {
 
 func MarketByTimezone(timezone string) (Market, error) {
 	if timezone == "" {
-		// TODO: add error code
-		return "", normalizederr.NewRequestError("no timezone specified", "")
+		return "", normalizederr.NewValidationError("no timezone specified")
 	}
 
-	data, _ := ioutil.ReadFile("./pkg/domains/shop/shoptyp/assets/marketByTimezone.json")
-
-	var marketsMap map[string]string
-	json.Unmarshal(data, &marketsMap)
-
-	market, exists := marketsMap[timezone]
+	market, exists := marketsByTimezone[timezone]
 	if !exists {
-		// TODO: add error code
-		return "", normalizederr.NewRequestError("invalid timezone", "")
+		return "", normalizederr.NewValidationError("invalid timezone")
 	}
 
 	return Market(market), nil
@@ -43,8 +38,7 @@ func MarketByCurrency(currency Currency) (Market, error) {
 
 	market, exists := marketByCurrency[currency]
 	if !exists {
-		// TODO: add error code
-		return "", normalizederr.NewRequestError("invalid currency", "")
+		return "", normalizederr.NewValidationError("invalid currency")
 	}
 
 	return market, nil
@@ -79,4 +73,31 @@ func (m Market) IsZero() bool {
 	return m == ""
 }
 
+func (m *Market) UnmarshalJSON(data []byte) error {
+	var str string
+	err := json.Unmarshal(data, &str)
+	if err != nil {
+		return err
+	}
+
+	*m = Market(strings.ToLower(str))
+	return validator.Validate(*m)
+}
+
 var MarketValues = Market.Enumerate("").(marketValues)
+
+/* ================================================================================
+	INIT
+================================================================================ */
+
+//go:embed assets/marketByTimezone.json
+var marketsByTimezoneJSON []byte
+
+var marketsByTimezone map[string]string
+
+func init() {
+	marketsByTimezone = make(map[string]string)
+	if err := json.Unmarshal(marketsByTimezoneJSON, &marketsByTimezone); err != nil {
+		panic("failed to load markets: " + err.Error())
+	}
+}

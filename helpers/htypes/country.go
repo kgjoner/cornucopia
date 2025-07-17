@@ -10,21 +10,33 @@ import (
 
 type Country string
 
-func (c *Country) IsValid() error {
+func ParseCountry(str string) (Country, error) {
+	if str == "" {
+		return "", nil
+	}
+
+	_, exists := countries[str]
+	if !exists {
+		for key, name := range countries {
+			if strings.EqualFold(name, str) {
+				return Country(key), nil
+			}
+		}
+
+		return "", normalizederr.NewValidationError("country does not exist")
+	}
+
+	return Country(str), nil
+}
+
+func (c Country) IsValid() error {
 	if c.IsZero() {
 		return nil
 	}
 
-	_, exists := countries[string(*c)]
+	_, exists := countries[string(c)]
 	if !exists {
-		for key, name := range countries {
-			if strings.EqualFold(name, string(*c)) {
-				*c = Country(key)
-				return nil
-			}
-		}
-
-		return normalizederr.NewValidationError("country does not exist")
+		return normalizederr.NewValidationError("country does not exist; certify that the country code is correct or that country name was parsed before validation check")
 	}
 
 	return nil
@@ -35,7 +47,32 @@ func (c Country) IsZero() bool {
 }
 
 func (c Country) Name() string {
-	return countries[string(c)]
+	name := countries[string(c)]
+	if name == "" {
+		for _, value := range countries {
+			if strings.EqualFold(value, string(c)) {
+				name = value
+				break
+			}
+		}
+	}
+
+	return name
+}
+
+func (c Country) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.Name())
+}
+
+func (c *Country) UnmarshalJSON(data []byte) error {
+	var s string
+	err := json.Unmarshal(data, &s)
+	if err != nil {
+		return err
+	}
+
+	*c, err = ParseCountry(s)
+	return err
 }
 
 /* ================================================================================

@@ -1,6 +1,7 @@
 package htypes
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -13,31 +14,51 @@ import (
 
 type Document string
 
-func ParseDocument(str string) (*Document, error) {
-	d := Document(str)
-	return &d, d.IsValid()
+func ParseDocument(str string) (Document, error) {
+	if str == "" {
+		return "", nil
+	}
+
+	parts := strings.Split(str, ":")
+	if len(parts) != 2 {
+		parts = make([]string, 2)
+		parts[1] = sanitizer.Digit(str)
+		switch len(parts[1]) {
+		case 11:
+			parts[0] = "cpf"
+		case 14:
+			parts[0] = "cnpj"
+		default:
+			return "", normalizederr.NewValidationError("unrecognizable document: try to inform its type in the form {type}:{number}")
+		}
+	} else if parts[0] != "passport" {
+		parts[1] = sanitizer.Digit(parts[1])
+	}
+
+	d := Document(fmt.Sprintf("%v:%v", parts[0], parts[1]))
+	return d, d.IsValid()
 }
 
-func (d *Document) IsValid() error {
+func (d Document) IsValid() error {
 	if d.IsZero() {
 		return nil
 	}
 
-	formatted, err := d.Format()
-	if err != nil {
-		return err
+	_, err := d.Parts()
+	return err
+}
+
+func (d Document) Parts() (*DocumentParts, error) {
+	parts := strings.Split(d.String(), ":")
+	if len(parts) != 2 {
+		return nil, normalizederr.NewValidationError("unformatted document: it must be in the form {type}:{number}")
 	}
 
-	switch formatted.Kind {
-	case "cpf":
-		return validateCpf(formatted.Number)
-	case "cnpj":
-		return validateCnpj(formatted.Number)
-	case "passport":
-		return validatePassport(formatted.Number)
-	default:
-		return normalizederr.NewValidationError("not accepted document kind")
+	res := &DocumentParts{
+		Kind:   parts[0],
+		Number: parts[1],
 	}
+	return res, validator.Validate(res)
 }
 
 func (d Document) IsZero() bool {
@@ -48,37 +69,33 @@ func (d Document) String() string {
 	return string(d)
 }
 
-type FormattedDocument struct {
+func (d *Document) UnmarshalJSON(data []byte) error {
+	var s string
+	err := json.Unmarshal(data, &s)
+	if err != nil {
+		return err
+	}
+
+	*d, err = ParseDocument(s)
+	return err
+}
+
+type DocumentParts struct {
 	Kind   string `validate:"required,oneof=cpf cnpj passport"`
 	Number string `validate:"required"`
 }
 
-func (d *Document) Format() (*FormattedDocument, error) {
-	parts := strings.Split(d.String(), ":")
-	if len(parts) != 2 {
-		parts = make([]string, 2)
-		parts[1] = sanitizer.Digit(d.String())
-		switch len(parts[1]) {
-		case 11:
-			parts[0] = "cpf"
-		case 14:
-			parts[0] = "cnpj"
-		default:
-			return nil, normalizederr.NewValidationError("unrecognizable document: try to inform its type in the form {type}:{number}")
-		}
-
-		*d = Document(fmt.Sprintf("%v:%v", parts[0], parts[1]))
-
-	} else if parts[0] != "passport" {
-		parts[1] = sanitizer.Digit(parts[1])
-		*d = Document(fmt.Sprintf("%v:%v", parts[0], parts[1]))
+func (p DocumentParts) IsValid() error {
+	switch p.Kind {
+	case "cpf":
+		return validateCpf(p.Number)
+	case "cnpj":
+		return validateCnpj(p.Number)
+	case "passport":
+		return validatePassport(p.Number)
+	default:
+		return normalizederr.NewValidationError("not accepted document kind")
 	}
-
-	res := &FormattedDocument{
-		Kind:   parts[0],
-		Number: parts[1],
-	}
-	return res, validator.Validate(res)
 }
 
 func validateCpf(cpf string) error {
