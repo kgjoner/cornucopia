@@ -16,7 +16,7 @@ func ParsePhoneNumber(str string) (PhoneNumber, error) {
 	return p, p.IsValid()
 }
 
-func (p *PhoneNumber) IsValid() error {
+func (p PhoneNumber) IsValid() error {
 	if p.IsZero() {
 		return nil
 	}
