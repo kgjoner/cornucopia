@@ -219,6 +219,46 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 		return setValue(target, edited, opt)
 	}
 
+	// Check if target implements json.Unmarshaler and edited is bytes/JSON-like
+	var unmarshaler json.Unmarshaler
+	var ok bool
+	if target.CanAddr() {
+		unmarshaler, ok = target.Addr().Interface().(json.Unmarshaler)
+	} else {
+		unmarshaler, ok = target.Interface().(json.Unmarshaler)
+	}
+
+	if ok {
+		if byteArr, ok := edited.Interface().([]byte); ok || edited.CanConvert(reflect.TypeOf([]byte{})) {
+			if !ok {
+				marshaller, ok := edited.Interface().(json.Marshaler)
+				if !ok {
+					// Convert string to bytes only for specific types that expect JSON string format
+					if edited.Kind() == reflect.String && (target.Kind() == reflect.String || target.Type() == reflect.TypeOf(time.Time{})) {
+						// For JSON unmarshaling, strings need to be properly quoted
+						quotedString := `"` + edited.String() + `"`
+						byteArr = []byte(quotedString)
+					} else {
+						return nil
+					}
+				} else {
+					data, err := marshaller.MarshalJSON()
+					if err != nil {
+						return err
+					}
+					byteArr = data
+				}
+			}
+
+			err := unmarshaler.UnmarshalJSON(byteArr)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}
+	}
+
 	if edited.CanConvert(target.Type()) {
 		edited = edited.Convert(target.Type())
 
@@ -286,13 +326,25 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 			edited = reflect.ValueOf(uuid)
 
 		case reflect.TypeOf(time.Now()), reflect.TypeOf(htypes.NullTime{}):
-			v, err := time.Parse("2006-01-02T15:04:05.9", str)
-			if err != nil {
-				v, err = time.Parse("2006-01-02", str)
-				if err != nil {
-					return err
+			timeFormats := []string{
+				time.RFC3339,
+				"2006-01-02",
+				"2006-01-02T15:04:05.9",
+				time.RFC3339Nano,
+			}
+			
+			var v time.Time
+			var err error
+			for _, format := range timeFormats {
+				v, err = time.Parse(format, str)
+				if err == nil {
+					break
 				}
 			}
+			if err != nil {
+				return err
+			}
+			
 			if target.Type() == reflect.TypeOf(htypes.NullTime{}) {
 				edited = reflect.ValueOf(htypes.NullTime{Time: v})
 			} else {
