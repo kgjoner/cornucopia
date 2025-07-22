@@ -18,6 +18,10 @@ var (
 		Name: "api_201_success_count",
 		Help: "The total number of created responses",
 	})
+	Counter204 = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "api_204_success_count",
+		Help: "The total number of no content responses",
+	})
 )
 
 type Success[T any] struct {
@@ -40,11 +44,18 @@ func HttpSuccess(data interface{}, w http.ResponseWriter, r *http.Request, statu
 	case 201:
 		Counter201.Inc()
 		NewLogger(r, 201).Info()
+	case 204:
+		Counter204.Inc()
+		NewLogger(r, 204).Info()
 	default:
 		Counter200.Inc()
 	}
 
 	w.WriteHeader(statusCode)
+	if statusCode == http.StatusNoContent {
+		return w
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 
 	var res any

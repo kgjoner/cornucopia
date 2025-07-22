@@ -24,6 +24,10 @@ var (
 			Name: "api_400_error_count",
 			Help: "The total number of bad request response errors",
 		}),
+		409: promauto.NewCounter(prometheus.CounterOpts{
+			Name: "api_409_error_count",
+			Help: "The total number of conflict response errors",
+		}),
 		422: promauto.NewCounter(prometheus.CounterOpts{
 			Name: "api_422_error_count",
 			Help: "The total number of validation response errors",
