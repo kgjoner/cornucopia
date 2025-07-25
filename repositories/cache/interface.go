@@ -11,6 +11,7 @@ var ErrNil = fmt.Errorf("cache: nil")
 
 type Pool interface {
 	NewDAO(context.Context) DAO
+	Close() error
 }
 
 type DAO interface {

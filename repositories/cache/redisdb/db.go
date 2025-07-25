@@ -25,11 +25,23 @@ func NewPool(url string) (*Pool, error) {
 	}, nil
 }
 
-func (p Pool) DatabaseUrl() string {
+func (p *Pool) Close() error {
+	if p.db == nil {
+		return nil
+	}
+	if err := p.db.Close(); err != nil {
+		return fmt.Errorf("cacherepo: unable to close redis connection: %v", err)
+	}
+
+	p.db = nil
+	return nil
+}
+
+func (p *Pool) DatabaseUrl() string {
 	return p.url
 }
 
-func (p Pool) Client() *redis.Client {
+func (p *Pool) Client() *redis.Client {
 	return p.db
 }
 

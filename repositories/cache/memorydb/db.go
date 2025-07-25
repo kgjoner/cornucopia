@@ -17,12 +17,17 @@ func NewPool() (*Pool, error) {
 	}, nil
 }
 
+func (p *Pool) Close() error {
+	p.data = nil
+	return nil
+}
+
 type DAO struct {
 	ctx  context.Context
 	data map[string]string
 }
 
-func (p Pool) NewDAO(ctx context.Context) cache.DAO {
+func (p *Pool) NewDAO(ctx context.Context) cache.DAO {
 	return &DAO{
 		ctx:  ctx,
 		data: p.data,
