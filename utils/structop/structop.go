@@ -108,7 +108,7 @@ func (s structop) Keys() []string {
 
 // List struct fields names accordingly to their json tag. If marked with "-", field is skipped.
 // If no json tag is provided, field name appears.
-func (s structop) JsonKeys() []string {
+func (s structop) JSONKeys() []string {
 	keys := []string{}
 	v := reflect.ValueOf(s.value)
 	typ := v.Type()
@@ -332,7 +332,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 				"2006-01-02T15:04:05.9",
 				time.RFC3339Nano,
 			}
-			
+
 			var v time.Time
 			var err error
 			for _, format := range timeFormats {
@@ -344,7 +344,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 			if err != nil {
 				return err
 			}
-			
+
 			if target.Type() == reflect.TypeOf(htypes.NullTime{}) {
 				edited = reflect.ValueOf(htypes.NullTime{Time: v})
 			} else {

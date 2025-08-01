@@ -210,13 +210,13 @@ func TestParseActorAs(t *testing.T) {
 	ctrl := controller.New(req)
 	result := ctrl.ParseActorAs(func(actor any, fields map[string]any) {
 		if actorMap, ok := actor.(map[string]interface{}); ok {
-			fields["userId"] = actorMap["id"]
+			fields["userID"] = actorMap["id"]
 			fields["userName"] = actorMap["name"]
 		}
 	})
 
 	var testStruct struct {
-		UserId   string
+		UserID   string
 		UserName string
 	}
 	err := result.Write(&testStruct)
@@ -224,15 +224,15 @@ func TestParseActorAs(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
-	if testStruct.UserId != "123" {
-		t.Errorf("Expected userId '123', got '%s'", testStruct.UserId)
+	if testStruct.UserID != "123" {
+		t.Errorf("Expected userID '123', got '%s'", testStruct.UserID)
 	}
 	if testStruct.UserName != "John Doe" {
 		t.Errorf("Expected userName 'John Doe', got '%s'", testStruct.UserName)
 	}
 }
 
-func TestParseUrlParam(t *testing.T) {
+func TestParseURLParam(t *testing.T) {
 	req := httptest.NewRequest("GET", "/test", nil)
 
 	// Set up chi context with URL params
@@ -244,10 +244,10 @@ func TestParseUrlParam(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	ctrl := controller.New(req)
-	result := ctrl.ParseUrlParam("id").ParseUrlParam("name", "username")
+	result := ctrl.ParseURLParam("id").ParseURLParam("name", "username")
 
 	var testStruct struct {
-		Id       string
+		ID       string
 		Username string
 	}
 	err := result.Write(&testStruct)
@@ -255,8 +255,8 @@ func TestParseUrlParam(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
-	if testStruct.Id != "123" {
-		t.Errorf("Expected id '123', got '%s'", testStruct.Id)
+	if testStruct.ID != "123" {
+		t.Errorf("Expected id '123', got '%s'", testStruct.ID)
 	}
 	if testStruct.Username != "john" {
 		t.Errorf("Expected username 'john', got '%s'", testStruct.Username)
@@ -290,13 +290,13 @@ func TestParseQueryParam(t *testing.T) {
 	}
 }
 
-func TestJsonBody(t *testing.T) {
+func TestJSONBody(t *testing.T) {
 	jsonData := `{"name": "John", "email": "john@example.com", "age": 30}`
 	req := httptest.NewRequest("POST", "/test", strings.NewReader(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 
 	ctrl := controller.New(req)
-	result := ctrl.JsonBody()
+	result := ctrl.JSONBody()
 
 	var testStruct TestStruct
 	err := result.Write(&testStruct)

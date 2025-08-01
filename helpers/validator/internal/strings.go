@@ -35,7 +35,7 @@ var stringValidations = map[string]func(string, []string) error{
 	"oneof":      oneof,
 	"slug":       slug,
 	"uri":        uri,
-	"wordId":     wordId,
+	"wordID":     wordID,
 }
 
 func requiredStr(str string, _ []string) error {
@@ -176,7 +176,7 @@ func uri(str string, _ []string) error {
 		return nil
 	}
 
-	u, err := url.Parse(str);
+	u, err := url.Parse(str)
 	if err != nil {
 		return err
 	} else if u.Scheme != "" && u.Host != "" {
@@ -187,7 +187,7 @@ func uri(str string, _ []string) error {
 	return normalizederr.NewValidationError(msg)
 }
 
-func wordId(str string, _ []string) error {
+func wordID(str string, _ []string) error {
 	if str == "" {
 		return nil
 	}

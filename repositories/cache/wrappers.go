@@ -16,7 +16,7 @@ func RunWithCache[R any, F any](q DAO, duration time.Duration, fn F) F {
 	wrapped := func(args ...any) (result R, err error) {
 		key := fnName + ":" + hash.From(args...)
 
-		err = q.GetJson(key, &result)
+		err = q.GetJSON(key, &result)
 		if err != ErrNil {
 			return result, err
 		}
@@ -29,9 +29,9 @@ func RunWithCache[R any, F any](q DAO, duration time.Duration, fn F) F {
 
 		if !resV.IsNil() {
 			result = reflect.Indirect(resV).Interface().(R)
-			err = q.CacheJson(key, result, duration)
+			err = q.CacheJSON(key, result, duration)
 		} else {
-			err = q.CacheJson(key, nil, duration)
+			err = q.CacheJSON(key, nil, duration)
 		}
 
 		return result, err

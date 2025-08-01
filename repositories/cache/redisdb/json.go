@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func (q DAO) CacheJson(key string, v interface{}, duration time.Duration) error {
+func (q DAO) CacheJSON(key string, v interface{}, duration time.Duration) error {
 	data, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -17,7 +17,7 @@ func (q DAO) CacheJson(key string, v interface{}, duration time.Duration) error 
 	return q.db.Set(q.ctx, key, string(data), duration).Err()
 }
 
-func (q DAO) GetJson(key string, v interface{}) error {
+func (q DAO) GetJSON(key string, v interface{}) error {
 	jsonData, err := q.db.Get(q.ctx, key).Result()
 	if err != nil && err != redis.Nil {
 		return err

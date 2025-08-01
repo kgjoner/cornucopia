@@ -77,7 +77,7 @@ func (s *structArrayScan[K]) Scan(src interface{}) error {
 
 func (a *structArrayScan[K]) scanBytes(src []byte) error {
 	// fmt.Printf("Src: %s", src)
-	elems, err := parseJsonArray(src)
+	elems, err := parseJSONArray(src)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (a *structArrayScan[K]) scanBytes(src []byte) error {
 
 			err = structop.New(&b[i]).UpdateViaMap(data)
 			if err != nil {
-			 return err
+				return err
 			}
 		}
 		*a = b
@@ -324,7 +324,7 @@ func scanLinearArray(src, del []byte, typ string) (elems [][]byte, err error) {
 	return elems, err
 }
 
-func parseJsonArray(src []byte) (elems [][]byte, err error) {
+func parseJSONArray(src []byte) (elems [][]byte, err error) {
 	if len(src) < 1 || src[0] != '[' {
 		return nil, fmt.Errorf("pq: unable to parse json array; expected %q at offset %d", '[', 0)
 	}
@@ -342,7 +342,7 @@ func parseJsonArray(src []byte) (elems [][]byte, err error) {
 			}
 		case '}', ']':
 			depth--
-			if i != len(src) - 1 {
+			if i != len(src)-1 {
 				elem = append(elem, b)
 			} else if len(elem) > 0 {
 				elems = append(elems, elem)
@@ -372,4 +372,4 @@ func parseJsonArray(src []byte) (elems [][]byte, err error) {
 	}
 
 	return elems, nil
-} 
+}

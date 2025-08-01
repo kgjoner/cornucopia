@@ -43,7 +43,7 @@ var (
 	}
 )
 
-func HttpError(err error, w http.ResponseWriter, r *http.Request) {
+func HTTPError(err error, w http.ResponseWriter, r *http.Request) {
 	var status int
 	var logLevel log.Level
 	if e, ok := err.(normalizederr.NormalizedError); ok {

@@ -20,7 +20,7 @@ func TestRunWithCache(t *testing.T) {
 	var mockingA struct{}
 	res, err := cache.RunWithCache[result](cacheRepo, 5*time.Minute, NewResult)(1, "foo", &mockingA)
 	assert.Nil(t, err)
-	assert.Equal(t, res.Id, 1)
+	assert.Equal(t, res.ID, 1)
 	assert.GreaterOrEqual(t, time.Since(start), sleepTime)
 
 	start = time.Now()
@@ -28,13 +28,13 @@ func TestRunWithCache(t *testing.T) {
 	var mockingB struct{}
 	res, err = cache.RunWithCache[result](cacheRepo, 5*time.Minute, NewResult)(1, "foo", &mockingB)
 	assert.Nil(t, err)
-	assert.Equal(t, res.Id, 1)
+	assert.Equal(t, res.ID, 1)
 	assert.Equal(t, res.Name, "foo")
 	assert.Less(t, time.Since(start), sleepTime)
 }
 
 type result struct {
-	Id   int
+	ID   int
 	Name string
 }
 

@@ -30,14 +30,14 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 		}
 
 		if len(actorMap) == 0 && input["Application"] != nil {
-			actorMap["Id"] = fmt.Sprintf("Application[%v]", input["Application"])
+			actorMap["ID"] = fmt.Sprintf("Application[%v]", input["Application"])
 		}
 
 		if normErr, ok := err.(normalizederr.NormalizedError); ok {
 			return log.WithFields(log.Fields{
 				"Method": r.Method,
 				"Path":   r.URL.Path,
-				"Actor":  actorMap["Id"],
+				"Actor":  actorMap["ID"],
 				"Input":  input,
 				"Kind":   normErr.Kind,
 				"Code":   normErr.Code,
@@ -47,7 +47,7 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 			return log.WithFields(log.Fields{
 				"Method": r.Method,
 				"Path":   r.URL.Path,
-				"Actor":  actorMap["Id"],
+				"Actor":  actorMap["ID"],
 				"Input":  input,
 				"Kind":   "Unexpected",
 				"Code":   "0000001",
@@ -59,7 +59,7 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 		return log.WithFields(log.Fields{
 			"Method": r.Method,
 			"Path":   r.URL.Path,
-			"Actor":  actorMap["Id"],
+			"Actor":  actorMap["ID"],
 			"Kind":   "Creation",
 		})
 	}
@@ -67,7 +67,7 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 	return log.WithFields(log.Fields{
 		"Method": r.Method,
 		"Path":   r.URL.Path,
-		"Actor":  actorMap["Id"],
+		"Actor":  actorMap["ID"],
 	})
 }
 
@@ -90,14 +90,14 @@ func removePrivateInputs(input map[string]any) {
 
 		if v := reflect.ValueOf(value); v.IsValid() && !v.IsZero() && v.Kind() == reflect.Struct {
 			vmap := structop.New(value).Map()
-			if id, exists := vmap["Id"]; exists {
+			if id, exists := vmap["ID"]; exists {
 				input[key] = id
 			}
 		}
 	}
 }
 
-func containsAny(key string, slc []string,) bool {
+func containsAny(key string, slc []string) bool {
 	for _, str := range slc {
 		if strings.Contains(key, str) {
 			return true

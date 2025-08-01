@@ -30,7 +30,7 @@ const (
 type Controller struct {
 	req         *http.Request
 	fields      map[string]any
-	hasJsonBody bool
+	hasJSONBody bool
 	err         error
 }
 
@@ -152,7 +152,7 @@ func (c *Controller) ParseMultipartForm(files, values []string, mediaService med
 
 // Get param from URL string. Field is the name used in input; if omitted, it is used the same
 // param name.
-func (c *Controller) ParseUrlParam(param string, field ...string) *Controller {
+func (c *Controller) ParseURLParam(param string, field ...string) *Controller {
 	var fieldName string
 	if len(field) == 0 {
 		fieldName = param
@@ -185,12 +185,12 @@ func (c *Controller) ParseQueryParam(param string, field ...string) *Controller 
 }
 
 // Mark the controller as having a JSON body. This will unmarshall the body when Write is called.
-func (c *Controller) JsonBody() *Controller {
-	c.hasJsonBody = true
+func (c *Controller) JSONBody() *Controller {
+	c.hasJSONBody = true
 	return c
 }
 
-// Deprecated: Use JsonBody instead.
+// Deprecated: Use JSONBody instead.
 func (c *Controller) ParseBody(fields ...string) *Controller {
 	var bodyMap map[string]any
 	json.NewDecoder(c.req.Body).Decode(&bodyMap)
@@ -317,7 +317,7 @@ func (c *Controller) Write(input any) error {
 		return c.err
 	}
 
-	if c.hasJsonBody {
+	if c.hasJSONBody {
 		defer c.req.Body.Close()
 		body, err := io.ReadAll(c.req.Body)
 		if err != nil {

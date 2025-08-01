@@ -15,7 +15,7 @@ type Pool interface {
 }
 
 type DAO interface {
-	CacheJson(key string, v interface{}, duration time.Duration) error
-	GetJson(key string, v interface{}) error
+	CacheJSON(key string, v interface{}, duration time.Duration) error
+	GetJSON(key string, v interface{}) error
 	Clear(key string)
 }

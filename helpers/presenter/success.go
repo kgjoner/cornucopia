@@ -32,7 +32,7 @@ type successResponse struct {
 	Data any `json:"data"`
 }
 
-func HttpSuccess(data interface{}, w http.ResponseWriter, r *http.Request, status ...int) http.ResponseWriter {
+func HTTPSuccess(data interface{}, w http.ResponseWriter, r *http.Request, status ...int) http.ResponseWriter {
 	var statusCode int
 	if len(status) == 0 {
 		statusCode = http.StatusOK

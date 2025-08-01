@@ -37,7 +37,7 @@ func (p *Pool) Close() error {
 	return nil
 }
 
-func (p *Pool) DatabaseUrl() string {
+func (p *Pool) DatabaseURL() string {
 	return p.url
 }
 
@@ -56,4 +56,3 @@ func (p Pool) NewDAO(ctx context.Context) cache.DAO {
 		db:  p.db,
 	}
 }
-

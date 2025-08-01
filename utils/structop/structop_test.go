@@ -152,7 +152,7 @@ func TestCopySlice(t *testing.T) {
 	assert.Equal(t, expected, target)
 }
 
-type SimilarWithJson struct {
+type SimilarWithJSON struct {
 	Name   string
 	Number int
 	Kind   string
@@ -161,29 +161,29 @@ type SimilarWithJson struct {
 	Arr    json.RawMessage
 }
 
-var mockedSimilarWithJson = SimilarWithJson{
-	Name:   "JsonName",
+var mockedSimilarWithJSON = SimilarWithJSON{
+	Name:   "JSONName",
 	Number: 31,
 	Kind:   "json-kind",
 	Time:   json.RawMessage(`"2023-12-12T09:10:11.234Z"`),
-	Nested: json.RawMessage(`{"Name":"NestedJsonName","Time":"2023-12-12T09:10:11.234Z"}`),
+	Nested: json.RawMessage(`{"Name":"NestedJSONName","Time":"2023-12-12T09:10:11.234Z"}`),
 	Arr:    json.RawMessage(`["opt1","opt2"]`),
 }
 
-func TestCopyWithJson(t *testing.T) {
+func TestCopyWithJSON(t *testing.T) {
 	target := mockedOriginal
-	err := structop.New(mockedSimilarWithJson).Copy(&target)
+	err := structop.New(mockedSimilarWithJSON).Copy(&target)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
 	expectedTime, _ := time.Parse(time.RFC3339, "2023-12-12T09:10:11.234Z")
 
-	assert.Equal(t, mockedSimilarWithJson.Name, target.Name)
-	assert.Equal(t, mockedSimilarWithJson.Number, target.Number)
-	assert.Equal(t, Kind(mockedSimilarWithJson.Kind), target.Kind)
+	assert.Equal(t, mockedSimilarWithJSON.Name, target.Name)
+	assert.Equal(t, mockedSimilarWithJSON.Number, target.Number)
+	assert.Equal(t, Kind(mockedSimilarWithJSON.Kind), target.Kind)
 	assert.Equal(t, expectedTime, target.Time)
-	assert.Equal(t, "NestedJsonName", target.Nested.Name)
+	assert.Equal(t, "NestedJSONName", target.Nested.Name)
 	assert.Equal(t, expectedTime, target.Nested.Time)
 	assert.Equal(t, []string{"opt1", "opt2"}, target.Arr)
 }
@@ -223,13 +223,13 @@ func TestUpdateViaMapWithPointer(t *testing.T) {
 }
 
 type StructEmbedding struct {
-	Id string
+	ID string
 	NestedStruct
 }
 
 func TestStructEmbeddingUpdate(t *testing.T) {
 	target := StructEmbedding{
-		Id: "123",
+		ID: "123",
 		NestedStruct: NestedStruct{
 			Name: "Name",
 			Time: time.Now(),
@@ -268,7 +268,7 @@ type StructWithUnmarshaler struct {
 	Custom CustomUnmarshaler
 }
 
-func TestJsonUnmarshalerPrecedence(t *testing.T) {
+func TestJSONUnmarshalerPrecedence(t *testing.T) {
 	target := StructWithUnmarshaler{
 		ID: "test-id",
 		Custom: CustomUnmarshaler{
@@ -293,7 +293,7 @@ func TestJsonUnmarshalerPrecedence(t *testing.T) {
 	assert.Equal(t, "unmarshaled:test-data", target.Custom.Value, "Value should be set by UnmarshalJSON")
 }
 
-func TestJsonUnmarshalerWithJsonMarshaler(t *testing.T) {
+func TestJSONUnmarshalerWithJSONMarshaler(t *testing.T) {
 	target := StructWithUnmarshaler{
 		ID: "test-id",
 		Custom: CustomUnmarshaler{
@@ -318,7 +318,7 @@ func TestJsonUnmarshalerWithJsonMarshaler(t *testing.T) {
 	assert.Equal(t, "unmarshaled:from-raw-message", target.Custom.Value, "Value should be set by UnmarshalJSON")
 }
 
-func TestJsonUnmarshalerSkippedWhenNotBytes(t *testing.T) {
+func TestJSONUnmarshalerSkippedWhenNotBytes(t *testing.T) {
 	target := StructWithUnmarshaler{
 		ID: "test-id",
 		Custom: CustomUnmarshaler{
@@ -379,7 +379,7 @@ func TestIsolatedNestedUnmarshal(t *testing.T) {
 	source := struct {
 		Nested json.RawMessage
 	}{
-		Nested: json.RawMessage(`{"Name":"NestedJsonName","Time":"2023-12-12T09:10:11.234Z"}`),
+		Nested: json.RawMessage(`{"Name":"NestedJSONName","Time":"2023-12-12T09:10:11.234Z"}`),
 	}
 
 	target := struct {
@@ -409,8 +409,8 @@ func TestIsolatedNestedUnmarshal(t *testing.T) {
 	}
 
 	expectedTime, _ := time.Parse(time.RFC3339, "2023-12-12T09:10:11.234Z")
-	if target.Nested.Name != "NestedJsonName" {
-		t.Errorf("Expected name 'NestedJsonName', got '%s'", target.Nested.Name)
+	if target.Nested.Name != "NestedJSONName" {
+		t.Errorf("Expected name 'NestedJSONName', got '%s'", target.Nested.Name)
 	}
 	if !target.Nested.Time.Equal(expectedTime) {
 		t.Errorf("Expected time %v, got %v", expectedTime, target.Nested.Time)

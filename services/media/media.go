@@ -46,7 +46,7 @@ func (m *Media) Config(id string, kind string) {
 }
 
 // Save media in the cloud, if not already, and return their URL.
-func (m *Media) Url() (string, error) {
+func (m *Media) URL() (string, error) {
 	if m.url != "" {
 		return m.url, nil
 	}
