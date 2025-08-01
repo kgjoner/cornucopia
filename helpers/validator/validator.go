@@ -143,14 +143,30 @@ func validateEnum(enum Enum, validations []string) error {
 		return err
 	}
 
-	isValid := false
-	enumName := reflect.TypeOf(enum).Name()
-	enumerateStruct := enum.Enumerate()
+	v := reflect.ValueOf(enum.Enumerate())
+	var length int
+
+	switch v.Kind() {
+	case reflect.Struct:
+		length = v.NumField()
+	case reflect.Slice, reflect.Array:
+		length = v.Len()
+	default:
+		return normalizederr.NewValidationError("Invalid enum type. Must be a struct or slice.")
+	}
 
 	var enumerate []Enum
-	v := reflect.ValueOf(enumerateStruct)
-	for i := 0; i < v.NumField(); i++ {
-		field := v.Field(i)
+	isValid := false
+	enumName := reflect.TypeOf(enum).Name()
+	for i := 0; i < length; i++ {
+		var field reflect.Value
+		switch v.Kind() {
+		case reflect.Struct:
+			field = v.Field(i)
+		case reflect.Slice, reflect.Array:
+			field = v.Index(i)
+		}
+
 		validValue, ok := field.Interface().(Enum)
 		if !ok {
 			message := fmt.Sprintf("All possible values of a Enum must be a Enum as well. %s is not structured correctly.", enumName)
