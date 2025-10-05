@@ -17,15 +17,19 @@ import (
 	"github.com/kgjoner/cornucopia/utils/structop"
 )
 
-type ctxKey int
+type oldCtxKey int
 
+// Deprecated: You should declare your own keys. 
+// Then, use AddFromContext to add them to the controller.
 const (
-	ApplicationKey ctxKey = iota
+	ApplicationKey oldCtxKey = iota
 	ActorKey
 	TargetKey
 	TokenKey
-	InputKey
 )
+
+type ctxKey string
+const InputKey = ctxKey("input")
 
 type Controller struct {
 	req         *http.Request
@@ -41,6 +45,22 @@ func New(req *http.Request) *Controller {
 	}
 }
 
+func (c *Controller) AddFromContext(key any, field string) *Controller {
+	if c.err != nil {
+		return c
+	}
+
+	token := c.req.Context().Value(key)
+	if token == nil {
+		c.err = normalizederr.NewUnauthorizedError(field + " required.")
+		return c
+	}
+
+	c.fields[field] = token
+	return c
+}
+
+// Deprecated: Use AddFromContext instead.
 func (c *Controller) AddToken() *Controller {
 	if c.err != nil {
 		return c
@@ -56,6 +76,7 @@ func (c *Controller) AddToken() *Controller {
 	return c
 }
 
+// Deprecated: Use AddFromContext instead.
 func (c *Controller) AddActor() *Controller {
 	if c.err != nil {
 		return c
@@ -71,6 +92,7 @@ func (c *Controller) AddActor() *Controller {
 	return c
 }
 
+// Deprecated: Use AddFromContext instead.
 func (c *Controller) AddTarget() *Controller {
 	if c.err != nil {
 		return c
@@ -86,6 +108,7 @@ func (c *Controller) AddTarget() *Controller {
 	return c
 }
 
+// Deprecated: Use AddFromContext instead.
 func (c *Controller) AddApplication() *Controller {
 	if c.err != nil {
 		return c
@@ -101,6 +124,9 @@ func (c *Controller) AddApplication() *Controller {
 	return c
 }
 
+// Deprecated: Should not be used. Delegate the processing of actor to usecase layer. For special cases,
+// you may process actor outside controller and use CustomField to add the result.
+//
 // Receive actor and parse relevant fields. Inputted func must return array of tuples in form [key, value].
 func (c *Controller) ParseActorAs(setFields func(actor any, fields map[string]any)) *Controller {
 	if c.err != nil {
@@ -177,8 +203,10 @@ func (c *Controller) ParseQueryParam(param string, field ...string) *Controller 
 
 	query := c.req.URL.Query()
 	qstr := query[param]
-	if len(qstr) != 0 {
+	if len(qstr) == 1 {
 		c.fields[fieldName] = qstr[0]
+	} else if len(qstr) > 1 {
+		c.fields[fieldName] = qstr
 	}
 
 	return c
@@ -306,6 +334,15 @@ func (c *Controller) AddLanguages() *Controller {
 
 	c.fields["languages"] = langs
 
+	return c
+}
+
+func (c *Controller) CustomField(field string, value any) *Controller {
+	if c.err != nil {
+		return c
+	}
+
+	c.fields[field] = value
 	return c
 }
 
