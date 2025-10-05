@@ -12,9 +12,16 @@ import (
 
 type Market string
 
-type marketValues struct {
-	BRAZIL Market
-	USA    Market
+const (
+	MarketBrazil Market = "brazil"
+	MarketUSA    Market = "usa"
+)
+
+func (m Market) Enumerate() any {
+	return []Market{
+		MarketBrazil,
+		MarketUSA,
+	}
 }
 
 func MarketByTimezone(timezone string) (Market, error) {
@@ -32,8 +39,8 @@ func MarketByTimezone(timezone string) (Market, error) {
 
 func MarketByCurrency(currency Currency) (Market, error) {
 	marketByCurrency := map[Currency]Market{
-		BRL: MarketValues.BRAZIL,
-		USD: MarketValues.USA,
+		BRL: MarketBrazil,
+		USD: MarketUSA,
 	}
 
 	market, exists := marketByCurrency[currency]
@@ -44,17 +51,10 @@ func MarketByCurrency(currency Currency) (Market, error) {
 	return market, nil
 }
 
-func (m Market) Enumerate() any {
-	return marketValues{
-		"brazil",
-		"usa",
-	}
-}
-
 func (m Market) Language() i18n.Language {
 	languageByMarket := map[Market]i18n.Language{
-		MarketValues.BRAZIL: i18n.LanguageValues.PT_BR,
-		MarketValues.USA:    i18n.LanguageValues.EN_US,
+		MarketBrazil: i18n.Portuguese,
+		MarketUSA:    i18n.English,
 	}
 
 	return languageByMarket[m]
@@ -62,8 +62,8 @@ func (m Market) Language() i18n.Language {
 
 func (m Market) Currency() Currency {
 	currencyByMarket := map[Market]Currency{
-		MarketValues.BRAZIL: BRL,
-		MarketValues.USA:    USD,
+		MarketBrazil: BRL,
+		MarketUSA:    USD,
 	}
 
 	return currencyByMarket[m]
@@ -83,8 +83,6 @@ func (m *Market) UnmarshalJSON(data []byte) error {
 	*m = Market(strings.ToLower(str))
 	return validator.Validate(*m)
 }
-
-var MarketValues = Market.Enumerate("").(marketValues)
 
 /* ================================================================================
 	INIT

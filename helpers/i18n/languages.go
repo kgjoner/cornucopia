@@ -2,16 +2,24 @@ package i18n
 
 type Language string
 
-type languageValues struct {
-	PT_BR Language
-	EN_US Language
-}
+const (
+	Portuguese Language = "pt-br"
+	English    Language = "en-us"
+	Spanish    Language = "es-es"
+	French     Language = "fr-fr"
+	German     Language = "de-de"
+	Japanese   Language = "ja-jp"
+	Korean     Language = "ko-kr"
+)
 
 func (s Language) Enumerate() any {
-	return languageValues{
-		"pt-br",
-		"en-us",
+	return []Language{
+		Portuguese,
+		English,
+		Spanish,
+		French,
+		German,
+		Japanese,
+		Korean,
 	}
 }
-
-var LanguageValues = Language.Enumerate("").(languageValues)

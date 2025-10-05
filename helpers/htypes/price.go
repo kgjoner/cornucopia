@@ -27,7 +27,7 @@ func ParsePrice(jsonData string) (Price, error) {
 }
 
 func (p Price) UpsertCurrency(currency Currency, fullPrice int) error {
-	err := currency.IsValid()
+	err := validator.Validate(currency)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (p Price) UpsertCurrency(currency Currency, fullPrice int) error {
 }
 
 func (p Price) DeleteCurrency(currency Currency) error {
-	err := currency.IsValid()
+	err := validator.Validate(currency)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (p Price) RemoveDiscount(currency Currency) error {
 }
 
 func (p Price) Values(currency Currency) (PriceValues, error) {
-	err := currency.IsValid()
+	err := validator.Validate(currency)
 	if err != nil {
 		return PriceValues{}, err
 	}
@@ -117,19 +117,11 @@ const (
 	USD Currency = "USD"
 )
 
-func (current_value Currency) IsValid() error {
-	availableOptions := []Currency{
+func (c Currency) Enumerate() any {
+	return []Currency{
 		BRL,
 		USD,
 	}
-
-	for _, option := range availableOptions {
-		if current_value == option {
-			return nil
-		}
-	}
-
-	return normalizederr.NewValidationError("Invalid Currency")
 }
 
 type PriceValues struct {
