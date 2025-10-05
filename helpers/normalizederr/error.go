@@ -1,3 +1,4 @@
+// DEPRECATED: use helpers/apperr instead
 package normalizederr
 
 import (
