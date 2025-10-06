@@ -8,20 +8,30 @@ import (
 	"github.com/kgjoner/cornucopia/utils/sliceman"
 )
 
+// CharSet represents available character sets
+type CharSet string
+
+const (
+    Lower   CharSet = "lower"
+    Upper   CharSet = "upper"
+    Number  CharSet = "number"
+    Special CharSet = "special"
+)
+
 // GeneratePassword creates a string with desired length including random runes based
 // on selected sets. The set options are: lower, upper, number and special. It will
 // include at least one rune of each set. If no set is provided, it will include all
 // of them. The minimum length is equal to the variety of selected sets, i.e., 4 if
 // all of them are selected.
-func GeneratePassword(length int, sets ...string) string {
+func GeneratePassword(length int, sets ...CharSet) string {
 	var password strings.Builder
 
 	if len(sets) == 0 {
-		sets = []string{"lower", "upper", "number", "special"}
+		sets = []CharSet{Lower, Upper, Number, Special}
 	}
 
 	fullSet := ""
-	if sliceman.IndexOf(sets, "lower") != -1 {
+	if sliceman.IndexOf(sets, Lower) != -1 {
 		lowerCharSet := "abcdefghijklmnopqrstuvwxyz"
 		fullSet += lowerCharSet
 
@@ -29,7 +39,7 @@ func GeneratePassword(length int, sets ...string) string {
 		password.WriteString(string(lowerCharSet[index]))
 	}
 
-	if sliceman.IndexOf(sets, "upper") != -1 {
+	if sliceman.IndexOf(sets, Upper) != -1 {
 		upperCharSet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		fullSet += upperCharSet
 
@@ -37,7 +47,7 @@ func GeneratePassword(length int, sets ...string) string {
 		password.WriteString(string(upperCharSet[index]))
 	}
 
-	if sliceman.IndexOf(sets, "number") != -1 {
+	if sliceman.IndexOf(sets, Number) != -1 {
 		numberSet := "0123456789"
 		fullSet += numberSet
 
@@ -45,7 +55,7 @@ func GeneratePassword(length int, sets ...string) string {
 		password.WriteString(string(numberSet[index]))
 	}
 
-	if sliceman.IndexOf(sets, "special") != -1 {
+	if sliceman.IndexOf(sets, Special) != -1 {
 		specialCharSet := "!@#$%&*"
 		fullSet += specialCharSet
 
