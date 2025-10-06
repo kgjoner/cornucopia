@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 	"github.com/kgjoner/cornucopia/utils/sanitizer"
 )
 
@@ -35,7 +35,7 @@ func (p PhoneNumber) Parts() (*PhoneNumberParts, error) {
 	s := string(p)
 	if strings.HasPrefix(s, "+55") {
 		if len(s) < 13 && len(s) > 14 {
-			return nil, normalizederr.NewValidationError("invalid length for Brazil phone")
+			return nil, apperr.NewValidationError("invalid length for Brazil phone")
 		}
 
 		return &PhoneNumberParts{
@@ -46,7 +46,7 @@ func (p PhoneNumber) Parts() (*PhoneNumberParts, error) {
 
 	} else if strings.HasPrefix(s, "+1") {
 		if len(s) != 12 {
-			return nil, normalizederr.NewValidationError("invalid length for US phone")
+			return nil, apperr.NewValidationError("invalid length for US phone")
 		}
 
 		return &PhoneNumberParts{
@@ -56,7 +56,7 @@ func (p PhoneNumber) Parts() (*PhoneNumberParts, error) {
 		}, nil
 	}
 
-	return nil, normalizederr.NewValidationError("phone out of region")
+	return nil, apperr.NewValidationError("phone out of region")
 }
 
 func (p PhoneNumber) IsZero() bool {

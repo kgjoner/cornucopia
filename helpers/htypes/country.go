@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 )
 
 type Country string
@@ -23,7 +23,7 @@ func ParseCountry(str string) (Country, error) {
 			}
 		}
 
-		return "", normalizederr.NewValidationError("country does not exist")
+		return "", apperr.NewValidationError("country does not exist")
 	}
 
 	return Country(str), nil
@@ -36,7 +36,7 @@ func (c Country) IsValid() error {
 
 	_, exists := countries[string(c)]
 	if !exists {
-		return normalizederr.NewValidationError("country does not exist; certify that the country code is correct or that country name was parsed before validation check")
+		return apperr.NewValidationError("country does not exist; certify that the country code is correct or that country name was parsed before validation check")
 	}
 
 	return nil

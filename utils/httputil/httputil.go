@@ -3,13 +3,12 @@ package httputil
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
 
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 )
 
 type HTTPUtil struct {
@@ -117,16 +116,34 @@ func DoReq(client *http.Client, req *http.Request, data any) (*http.Response, er
 		var bodyErr map[string]any
 		json.NewDecoder(res.Body).Decode(&bodyErr)
 
-		msg, _ := bodyErr["message"].(string)
-		code, _ := bodyErr["code"].(string)
-		err := normalizederr.NewExternalError(msg, map[string]error{
-			"RequestMethod":  errors.New(req.Method),
-			"RequestURL":     errors.New(req.URL.String()),
-			"ResponseStatus": errors.New(fmt.Sprint(res.StatusCode)),
-			"ResponseBody":   errors.New(fmt.Sprint(bodyErr)),
-		}, code)
+		err := apperr.NewMapError(map[string]string{
+			"RequestMethod":  req.Method,
+			"RequestURL":     req.URL.String(),
+			"ResponseStatus": fmt.Sprint(res.StatusCode),
+			"ResponseBody":   fmt.Sprint(bodyErr),
+		})
 
-		return res, err
+		msg, _ := bodyErr["message"].(string)
+		code, _ := bodyErr["code"].(apperr.Code)
+
+		if code == "" {
+			switch res.StatusCode {
+			case 400:
+				code = apperr.BadRequest
+			case 401:
+				code = apperr.Unauthenticated
+			case 403:
+				code = apperr.NotAllowed
+			case 409:
+				code = apperr.Inconsistency
+			case 422:
+				code = apperr.InvalidData
+			default:
+				code = apperr.Unexpected
+			}
+		}
+
+		return res, apperr.Wrap(err, apperr.External, code, msg)
 	}
 
 	if data != nil {

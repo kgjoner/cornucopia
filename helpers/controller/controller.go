@@ -11,15 +11,15 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 	"github.com/kgjoner/cornucopia/helpers/htypes"
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 	"github.com/kgjoner/cornucopia/services/media"
 	"github.com/kgjoner/cornucopia/utils/structop"
 )
 
 type oldCtxKey int
 
-// Deprecated: You should declare your own keys. 
+// Deprecated: You should declare your own keys.
 // Then, use AddFromContext to add them to the controller.
 const (
 	ApplicationKey oldCtxKey = iota
@@ -29,6 +29,7 @@ const (
 )
 
 type ctxKey string
+
 const InputKey = ctxKey("input")
 
 type Controller struct {
@@ -52,7 +53,7 @@ func (c *Controller) AddFromContext(key any, field string) *Controller {
 
 	token := c.req.Context().Value(key)
 	if token == nil {
-		c.err = normalizederr.NewUnauthorizedError(field + " required.")
+		c.err = apperr.NewInternalError("field \"" + field + "\" should have been set")
 		return c
 	}
 
@@ -68,7 +69,7 @@ func (c *Controller) AddToken() *Controller {
 
 	token, ok := c.req.Context().Value(TokenKey).(string)
 	if !ok {
-		c.err = normalizederr.NewUnauthorizedError("Token required.")
+		c.err = apperr.NewUnauthorizedError("token required")
 		return c
 	}
 
@@ -84,7 +85,7 @@ func (c *Controller) AddActor() *Controller {
 
 	actor := c.req.Context().Value(ActorKey)
 	if actor == nil {
-		c.err = normalizederr.NewUnauthorizedError("Actor required.")
+		c.err = apperr.NewUnauthorizedError("Actor required.")
 		return c
 	}
 
@@ -100,7 +101,7 @@ func (c *Controller) AddTarget() *Controller {
 
 	target := c.req.Context().Value(TargetKey)
 	if target == nil {
-		c.err = normalizederr.NewUnauthorizedError("Target required.")
+		c.err = apperr.NewUnauthorizedError("Target required.")
 		return c
 	}
 
@@ -116,7 +117,7 @@ func (c *Controller) AddApplication() *Controller {
 
 	application := c.req.Context().Value(ApplicationKey)
 	if application == nil {
-		c.err = normalizederr.NewUnauthorizedError("Application required.")
+		c.err = apperr.NewUnauthorizedError("Application required.")
 		return c
 	}
 
@@ -135,7 +136,7 @@ func (c *Controller) ParseActorAs(setFields func(actor any, fields map[string]an
 
 	actor := c.req.Context().Value(ActorKey)
 	if actor == nil {
-		c.err = normalizederr.NewUnauthorizedError("Actor required.")
+		c.err = apperr.NewUnauthorizedError("Actor required.")
 		return c
 	}
 

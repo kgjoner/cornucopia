@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 	v "github.com/kgjoner/cornucopia/helpers/validator/internal"
 	"github.com/kgjoner/cornucopia/utils/sliceman"
 )
@@ -63,7 +63,8 @@ func assertSelfValidation(primitive interface{}) error {
 	}
 
 	if v, ok := p.(Validator); ok {
-		return v.IsValid()
+		err := v.IsValid()
+		return apperr.Wrap(err, apperr.Validation, apperr.InvalidData, "invalid internal data")
 	}
 
 	return nil
@@ -76,7 +77,7 @@ func validateArray(arr reflect.Value, validations []string) error {
 	for i, validation := range validations {
 		if strings.Contains(validation, "required") {
 			if arr.IsZero() || length == 0 {
-				return normalizederr.NewValidationError("Required.")
+				return apperr.NewValidationError("required")
 			}
 			validations = sliceman.Remove(validations, i)
 		} else {
@@ -102,7 +103,7 @@ func validateMap(mp reflect.Value, validations []string) error {
 	for i, validation := range validations {
 		if strings.Contains(validation, "required") {
 			if mp.IsZero() || length == 0 {
-				return normalizederr.NewValidationError("Required.")
+				return apperr.NewValidationError("required")
 			}
 			validations = sliceman.Remove(validations, i)
 		} else {
@@ -152,7 +153,7 @@ func validateEnum(enum Enum, validations []string) error {
 	case reflect.Slice, reflect.Array:
 		length = v.Len()
 	default:
-		return normalizederr.NewValidationError("Invalid enum type. Must be a struct or slice.")
+		return apperr.NewValidationError("invalid enum type; must be a struct or slice")
 	}
 
 	var enumerate []Enum
@@ -169,8 +170,8 @@ func validateEnum(enum Enum, validations []string) error {
 
 		validValue, ok := field.Interface().(Enum)
 		if !ok {
-			message := fmt.Sprintf("All possible values of a Enum must be a Enum as well. %s is not structured correctly.", enumName)
-			return normalizederr.NewValidationError(message)
+			message := fmt.Sprintf("all possible values of an enum must be a enum as well; %s is not structured correctly.", enumName)
+			return apperr.NewValidationError(message)
 		}
 
 		if len(availableOpt) != 0 && field.CanConvert(reflect.TypeOf("")) {
@@ -195,8 +196,8 @@ func validateEnum(enum Enum, validations []string) error {
 	}
 
 	if !isValid {
-		message := fmt.Sprintf("Invalid %s value. Must be one of: %v", enumName, enumerate)
-		return normalizederr.NewValidationError(message)
+		message := fmt.Sprintf("invalid %s value; must be one of: %v", enumName, enumerate)
+		return apperr.NewValidationError(message)
 	}
 
 	return nil
@@ -215,7 +216,7 @@ func validatePrimitive(primitive reflect.Value, validations []string) error {
 	case reflect.Int:
 		return v.Number(primitive, valMap)
 	default:
-		return normalizederr.NewValidationError("No accepted primitive type")
+		return apperr.NewValidationError("not accepted primitive type")
 	}
 }
 
@@ -231,7 +232,7 @@ func validateStruct(obj interface{}, validations []string) error {
 		switch validation {
 		case "required":
 			if objValue.IsZero() {
-				return normalizederr.NewValidationError("Required.")
+				return apperr.NewValidationError("required")
 			}
 		case "ignore":
 			return nil
@@ -243,21 +244,22 @@ func validateStruct(obj interface{}, validations []string) error {
 	}
 
 	validationsByField := extractValidationsByField(obj)
-	errors := make(map[string]error)
+	details := make(map[string]string)
 
 	for field, validations := range validationsByField {
 		fieldValue := objValue.FieldByName(field)
 		err := Validate(fieldValue, validations...)
 		if err != nil {
-			errors[field] = err
+			details[field] = err.Error()
 		}
 	}
 
-	if len(errors) == 0 {
+	if len(details) == 0 {
 		return nil
 	}
 
-	return normalizederr.NewValidationErrorFromMap(errors)
+	maperr := apperr.NewMapError(details)
+	return apperr.Wrap(maperr, apperr.Validation, apperr.InvalidData, "invalid field(s)")
 }
 
 func validateTime(value reflect.Value, validations ...string) error {

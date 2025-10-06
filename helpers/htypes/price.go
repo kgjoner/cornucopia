@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 	"github.com/kgjoner/cornucopia/helpers/validator"
 )
 
@@ -99,7 +99,7 @@ func (p Price) Values(currency Currency) (PriceValues, error) {
 
 	values, exists := p[currency]
 	if !exists {
-		return PriceValues{}, normalizederr.NewValidationError(fmt.Sprintf("%v is not set for this price yet. Add it first.", currency))
+		return PriceValues{}, apperr.NewValidationError(fmt.Sprintf("%v is not set for this price yet. Add it first.", currency))
 	}
 
 	return values, nil
@@ -144,14 +144,14 @@ func newPriceValues(fullPrice int) (PriceValues, error) {
 }
 
 func (p PriceValues) IsValid() error {
-	errs := make(map[string]error)
+	errs := make(map[string]string)
 
 	if p.SalePrice > p.FullPrice {
-		errs["SalePrice"] = fmt.Errorf("must not be higher than full price")
+		errs["SalePrice"] = "must not be higher than full price"
 	}
 
 	if len(errs) != 0 {
-		return normalizederr.NewValidationErrorFromMap(errs)
+		return apperr.NewMapError(errs)
 	}
 
 	return nil

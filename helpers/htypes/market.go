@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 	"github.com/kgjoner/cornucopia/helpers/i18n"
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 	"github.com/kgjoner/cornucopia/helpers/validator"
 )
 
@@ -26,12 +26,12 @@ func (m Market) Enumerate() any {
 
 func MarketByTimezone(timezone string) (Market, error) {
 	if timezone == "" {
-		return "", normalizederr.NewValidationError("no timezone specified")
+		return "", apperr.NewValidationError("no timezone specified")
 	}
 
 	market, exists := marketsByTimezone[timezone]
 	if !exists {
-		return "", normalizederr.NewValidationError("invalid timezone")
+		return "", apperr.NewValidationError("invalid timezone")
 	}
 
 	return Market(market), nil
@@ -45,7 +45,7 @@ func MarketByCurrency(currency Currency) (Market, error) {
 
 	market, exists := marketByCurrency[currency]
 	if !exists {
-		return "", normalizederr.NewValidationError("invalid currency")
+		return "", apperr.NewValidationError("invalid currency")
 	}
 
 	return market, nil

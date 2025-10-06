@@ -5,7 +5,7 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 )
 
 type Email string
@@ -28,7 +28,7 @@ func (e Email) IsValid() error {
 
 	// Check if email is in lowercase format
 	if str != strings.ToLower(str) {
-		return normalizederr.NewValidationError("email must be in lowercase format; use ParseEmail to normalize")
+		return apperr.NewValidationError("email must be in lowercase format; use ParseEmail to normalize")
 	}
 
 	// Fast basic checks
@@ -37,13 +37,13 @@ func (e Email) IsValid() error {
 		strings.HasPrefix(str, "@") ||
 		strings.HasSuffix(str, "@") ||
 		!strings.Contains(str, ".") {
-		return normalizederr.NewValidationError("must be a valid email")
+		return apperr.NewValidationError("must be a valid email")
 	}
 
 	// Use standard library for comprehensive validation
 	_, err := mail.ParseAddress(str)
 	if err != nil {
-		return normalizederr.NewValidationError("must be a valid email")
+		return apperr.NewValidationError("must be a valid email")
 	}
 
 	return nil

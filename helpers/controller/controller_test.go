@@ -3,6 +3,7 @@ package controller_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"mime/multipart"
 	"net/http/httptest"
 	"reflect"
@@ -10,9 +11,9 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 	"github.com/kgjoner/cornucopia/helpers/controller"
 	"github.com/kgjoner/cornucopia/helpers/htypes"
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 	"github.com/kgjoner/cornucopia/services/media"
 )
 
@@ -521,12 +522,13 @@ func TestErrorHandling(t *testing.T) {
 	}
 
 	// Check if it's a normalized error
-	if normalizedErr, ok := err.(normalizederr.NormalizedError); ok {
-		if normalizedErr.Message != "Token required." {
-			t.Errorf("Expected error message 'Token required.', got '%s'", normalizedErr.Message)
+	var apperr *apperr.AppError
+	if errors.As(err, &apperr) {
+		if strings.Contains(apperr.Message, "token") {
+			t.Errorf("Expected error message containing 'token', got '%s'", apperr.Message)
 		}
 	} else {
-		t.Errorf("Expected NormalizedError, got %T", err)
+		t.Errorf("Expected AppError, got %T", err)
 	}
 }
 

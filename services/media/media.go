@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 )
 
 type Media struct {
@@ -29,7 +29,7 @@ func New(file *bytes.Buffer, mediaService MediaService) *Media {
 
 func (m *Media) IsValid() error {
 	if m.url == "" && (reflect.ValueOf(m.file).IsZero() || reflect.ValueOf(m.mediaService).IsZero()) {
-		return normalizederr.NewValidationError("Missing fields in media type")
+		return apperr.NewValidationError("missing fields in media type")
 	}
 
 	return nil
@@ -52,7 +52,7 @@ func (m *Media) URL() (string, error) {
 	}
 
 	if reflect.ValueOf(m.file).IsZero() || reflect.ValueOf(m.mediaService).IsZero() {
-		return "", normalizederr.NewValidationError("Missing fields in media type")
+		return "", apperr.NewValidationError("missing fields in media type")
 	}
 
 	url, err := m.mediaService.Store(m.file, m.kind, m.id)

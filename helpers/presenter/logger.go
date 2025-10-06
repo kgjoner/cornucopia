@@ -1,13 +1,14 @@
 package presenter
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
 
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 	"github.com/kgjoner/cornucopia/helpers/controller"
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
 	"github.com/kgjoner/cornucopia/services/media"
 	"github.com/kgjoner/cornucopia/utils/structop"
 	log "github.com/sirupsen/logrus"
@@ -33,15 +34,16 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 			actorMap["ID"] = fmt.Sprintf("Application[%v]", input["Application"])
 		}
 
-		if normErr, ok := err.(normalizederr.NormalizedError); ok {
+		var appErr *apperr.AppError
+		if errors.As(err, &appErr) {
 			return log.WithFields(log.Fields{
 				"Method": r.Method,
 				"Path":   r.URL.Path,
 				"Actor":  actorMap["ID"],
 				"Input":  input,
-				"Kind":   normErr.Kind,
-				"Code":   normErr.Code,
-				"Stack":  normErr.Stack,
+				"Kind":   appErr.Kind,
+				"Code":   appErr.Code,
+				// "Stack":  appErr.Stack,
 			})
 		} else {
 			return log.WithFields(log.Fields{

@@ -7,14 +7,14 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/kgjoner/cornucopia/helpers/normalizederr"
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 )
 
 func String(value reflect.Value, validations map[string][]string) error {
 	for name, args := range validations {
 		validationFn := stringValidations[name]
 		if validationFn == nil {
-			return normalizederr.NewValidationError("Unknown desired validation for type string")
+			return apperr.NewInternalError(fmt.Sprintf("unknown \"%s\" validation for type string", name))
 		}
 
 		err := validationFn(value.String(), args)
@@ -40,7 +40,7 @@ var stringValidations = map[string]func(string, []string) error{
 
 func requiredStr(str string, _ []string) error {
 	if str == "" {
-		return normalizederr.NewValidationError("Required.")
+		return apperr.NewValidationError("required")
 	}
 	return nil
 }
@@ -82,8 +82,8 @@ func atLeastOne(str string, options []string) error {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must have at least%v.", bodyMsg)
-	return normalizederr.NewValidationError(msg)
+	msg := fmt.Sprintf("must have at least%v.", bodyMsg)
+	return apperr.NewValidationError(msg)
 }
 
 func length(str string, options []string) error {
@@ -100,8 +100,8 @@ func length(str string, options []string) error {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must have %v characters", target)
-	return normalizederr.NewValidationError(msg)
+	msg := fmt.Sprintf("must have %v characters", target)
+	return apperr.NewValidationError(msg)
 }
 
 func maxStr(str string, options []string) error {
@@ -118,8 +118,8 @@ func maxStr(str string, options []string) error {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must have at maximum %v characters", target)
-	return normalizederr.NewValidationError(msg)
+	msg := fmt.Sprintf("must have at maximum %v characters", target)
+	return apperr.NewValidationError(msg)
 }
 
 func minStr(str string, options []string) error {
@@ -136,8 +136,8 @@ func minStr(str string, options []string) error {
 		return nil
 	}
 
-	msg := fmt.Sprintf("Must have at least %v characters", target)
-	return normalizederr.NewValidationError(msg)
+	msg := fmt.Sprintf("must have at least %v characters", target)
+	return apperr.NewValidationError(msg)
 }
 
 func oneof(str string, options []string) error {
@@ -151,8 +151,8 @@ func oneof(str string, options []string) error {
 		}
 	}
 
-	msg := fmt.Sprintf("Must be one of %v", options)
-	return normalizederr.NewValidationError(msg)
+	msg := fmt.Sprintf("must be one of %v", options)
+	return apperr.NewValidationError(msg)
 }
 
 func slug(str string, _ []string) error {
@@ -167,8 +167,8 @@ func slug(str string, _ []string) error {
 		return nil
 	}
 
-	msg := "Must have only alphanumeric characters, hyphen and underscore"
-	return normalizederr.NewValidationError(msg)
+	msg := "must have only alphanumeric characters, hyphen and underscore"
+	return apperr.NewValidationError(msg)
 }
 
 func uri(str string, _ []string) error {
@@ -183,8 +183,8 @@ func uri(str string, _ []string) error {
 		return nil
 	}
 
-	msg := "Must have a valid uri format"
-	return normalizederr.NewValidationError(msg)
+	msg := "must have a valid uri format"
+	return apperr.NewValidationError(msg)
 }
 
 func wordID(str string, _ []string) error {
@@ -199,6 +199,6 @@ func wordID(str string, _ []string) error {
 		return nil
 	}
 
-	msg := "Must have only letters, numbers and period."
-	return normalizederr.NewValidationError(msg)
+	msg := "must have only letters, numbers and period."
+	return apperr.NewValidationError(msg)
 }

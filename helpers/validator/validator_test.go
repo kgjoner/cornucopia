@@ -1,9 +1,11 @@
 package validator
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
+	"github.com/kgjoner/cornucopia/helpers/apperr"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -103,30 +105,34 @@ func (e StructEnum) Enumerate() any {
 
 func TestEnumValidation(t *testing.T) {
 	// Test Enum with slice enumeration
-	type EnumStruct struct {
+	type WithSliceEnum struct {
 		Value SliceEnum
 	}
 
-	valid1 := EnumStruct{Value: EnumValue1}
+	valid1 := WithSliceEnum{Value: EnumValue1}
 	err := Validate(valid1)
 	assert.Nil(t, err)
 
-	invalid1 := EnumStruct{Value: "invalid"}
+	var appErr *apperr.AppError
+	invalid1 := WithSliceEnum{Value: "invalid"}
 	err = Validate(invalid1)
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "Invalid")
+	assert.True(t, errors.As(err, &appErr))
+	assert.Equal(t, appErr.Code, apperr.InvalidData)
 
 	// Test Enum with slice enumeration
-	type EnumStruct2 struct {
+	type WithStructEnum struct {
 		Value StructEnum
 	}
 
-	valid2 := EnumStruct2{Value: StructEnum("value1")}
+	valid2 := WithStructEnum{Value: StructEnum("value1")}
 	err = Validate(valid2)
 	assert.Nil(t, err)
 
-	invalid2 := EnumStruct2{Value: StructEnum("invalid")}
+	invalid2 := WithStructEnum{Value: StructEnum("invalid")}
 	err = Validate(invalid2)
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "Invalid")
+	assert.NotNil(t, err)
+	assert.True(t, errors.As(err, &appErr))
+	assert.Equal(t, appErr.Code, apperr.InvalidData)
 }
