@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kgjoner/cornucopia/helpers/apperr"
-	v "github.com/kgjoner/cornucopia/helpers/validator/internal"
-	"github.com/kgjoner/cornucopia/utils/sliceman"
+	"github.com/kgjoner/cornucopia/v2/helpers/apperr"
+	v "github.com/kgjoner/cornucopia/v2/helpers/validator/internal"
+	"github.com/kgjoner/cornucopia/v2/utils/sliceman"
 )
 
 type Validator interface {

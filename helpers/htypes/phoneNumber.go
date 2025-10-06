@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/helpers/apperr"
-	"github.com/kgjoner/cornucopia/utils/sanitizer"
+	"github.com/kgjoner/cornucopia/v2/helpers/apperr"
+	"github.com/kgjoner/cornucopia/v2/utils/sanitizer"
 )
 
 type PhoneNumber string

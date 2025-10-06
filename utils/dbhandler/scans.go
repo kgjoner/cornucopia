@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/utils/structop"
+	"github.com/kgjoner/cornucopia/v2/utils/structop"
 )
 
 // Implements Scanner for structs

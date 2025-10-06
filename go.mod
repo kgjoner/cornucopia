@@ -1,4 +1,4 @@
-module github.com/kgjoner/cornucopia
+module github.com/kgjoner/cornucopia/v2
 
 go 1.19
 

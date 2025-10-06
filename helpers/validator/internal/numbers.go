@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/kgjoner/cornucopia/helpers/apperr"
+	"github.com/kgjoner/cornucopia/v2/helpers/apperr"
 )
 
 func Number(value reflect.Value, validations map[string][]string) error {
@@ -27,7 +27,7 @@ func Number(value reflect.Value, validations map[string][]string) error {
 var numberValidations = map[string]func(int, []string) error{
 	"required": requiredNum,
 	"min":      min,
-	"max": max,
+	"max":      max,
 }
 
 func requiredNum(num int, _ []string) error {

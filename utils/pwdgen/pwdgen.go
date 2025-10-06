@@ -5,17 +5,17 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/utils/sliceman"
+	"github.com/kgjoner/cornucopia/v2/utils/sliceman"
 )
 
 // CharSet represents available character sets
 type CharSet string
 
 const (
-    Lower   CharSet = "lower"
-    Upper   CharSet = "upper"
-    Number  CharSet = "number"
-    Special CharSet = "special"
+	Lower   CharSet = "lower"
+	Upper   CharSet = "upper"
+	Number  CharSet = "number"
+	Special CharSet = "special"
 )
 
 // GeneratePassword creates a string with desired length including random runes based

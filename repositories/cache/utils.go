@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"github.com/kgjoner/cornucopia/utils/hash"
+	"github.com/kgjoner/cornucopia/v2/utils/hash"
 )
 
 type KeyGen struct {

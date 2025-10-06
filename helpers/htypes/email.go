@@ -5,7 +5,7 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/helpers/apperr"
+	"github.com/kgjoner/cornucopia/v2/helpers/apperr"
 )
 
 type Email string

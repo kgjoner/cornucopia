@@ -3,8 +3,8 @@ package htypes_test
 import (
 	"testing"
 
-	"github.com/kgjoner/cornucopia/helpers/htypes"
-	"github.com/kgjoner/cornucopia/helpers/validator"
+	"github.com/kgjoner/cornucopia/v2/helpers/htypes"
+	"github.com/kgjoner/cornucopia/v2/helpers/validator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +22,7 @@ func TestEmailValidation(t *testing.T) {
 	assert.Nil(t, err)
 
 	insideStr := struct {
-		Name string
+		Name  string
 		Email htypes.Email `validate:"required"`
 	}{
 		"Dummy",

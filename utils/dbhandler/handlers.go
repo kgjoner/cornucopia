@@ -3,7 +3,7 @@ package dbhandler
 import (
 	"database/sql"
 
-	"github.com/kgjoner/cornucopia/helpers/htypes"
+	"github.com/kgjoner/cornucopia/v2/helpers/htypes"
 )
 
 func HandleListQuery[T any](rows *sql.Rows, pag *htypes.Pagination, dest func(item *T) []any) (*htypes.PaginatedData[T], error) {

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kgjoner/cornucopia/utils/hash"
+	"github.com/kgjoner/cornucopia/v2/utils/hash"
 )
 
 // Check for a cached result of F, if no hit, run it. F must return (*R, error).

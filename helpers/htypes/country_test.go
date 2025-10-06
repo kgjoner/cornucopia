@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/kgjoner/cornucopia/helpers/htypes"
+	"github.com/kgjoner/cornucopia/v2/helpers/htypes"
 )
 
 func TestCountry(t *testing.T) {
@@ -99,7 +99,7 @@ func TestCountry(t *testing.T) {
 
 			// Test UnmarshalJSON()
 			var unmarshalledCountry htypes.Country
-			err = json.Unmarshal([]byte(`"` + tt.input + `"`), &unmarshalledCountry)
+			err = json.Unmarshal([]byte(`"`+tt.input+`"`), &unmarshalledCountry)
 			if (err != nil) != tt.wantUnmarshalErr {
 				t.Errorf("json.Unmarshal() error = %v, wantUnmarshalErr %v", err, tt.wantUnmarshalErr)
 			}

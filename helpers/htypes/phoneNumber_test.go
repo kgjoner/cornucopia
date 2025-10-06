@@ -3,7 +3,7 @@ package htypes_test
 import (
 	"testing"
 
-	"github.com/kgjoner/cornucopia/helpers/htypes"
+	"github.com/kgjoner/cornucopia/v2/helpers/htypes"
 	"github.com/stretchr/testify/assert"
 )
 

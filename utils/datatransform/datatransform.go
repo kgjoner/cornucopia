@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kgjoner/cornucopia/helpers/htypes"
+	"github.com/kgjoner/cornucopia/v2/helpers/htypes"
 )
 
 func ToRawMessage(obj interface{}) json.RawMessage {

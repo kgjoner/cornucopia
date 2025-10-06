@@ -11,10 +11,10 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kgjoner/cornucopia/helpers/apperr"
-	"github.com/kgjoner/cornucopia/helpers/controller"
-	"github.com/kgjoner/cornucopia/helpers/htypes"
-	"github.com/kgjoner/cornucopia/services/media"
+	"github.com/kgjoner/cornucopia/v2/helpers/apperr"
+	"github.com/kgjoner/cornucopia/v2/helpers/controller"
+	"github.com/kgjoner/cornucopia/v2/helpers/htypes"
+	"github.com/kgjoner/cornucopia/v2/services/media"
 )
 
 // Mock media service for testing

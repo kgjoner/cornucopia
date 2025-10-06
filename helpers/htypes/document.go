@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/helpers/apperr"
-	"github.com/kgjoner/cornucopia/helpers/validator"
-	"github.com/kgjoner/cornucopia/utils/sanitizer"
-	"github.com/kgjoner/cornucopia/utils/sliceman"
+	"github.com/kgjoner/cornucopia/v2/helpers/apperr"
+	"github.com/kgjoner/cornucopia/v2/helpers/validator"
+	"github.com/kgjoner/cornucopia/v2/utils/sanitizer"
+	"github.com/kgjoner/cornucopia/v2/utils/sliceman"
 )
 
 type Document string

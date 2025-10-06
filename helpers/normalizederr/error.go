@@ -37,7 +37,7 @@ func NewValidationErrorFromMap(errorMap map[string]error, code ...string) Normal
 	message := "{ "
 	msgMap := map[string]string{}
 	for k, v := range errorMap {
-		if v != nil {			
+		if v != nil {
 			message += fmt.Sprintf("%v: %v \n", k, v)
 			msgMap[k] = v.Error()
 		}

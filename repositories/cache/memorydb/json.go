@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/kgjoner/cornucopia/repositories/cache"
+	"github.com/kgjoner/cornucopia/v2/repositories/cache"
 )
 
 func (q DAO) CacheJSON(key string, v interface{}, duration time.Duration) error {

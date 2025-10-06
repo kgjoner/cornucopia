@@ -6,14 +6,15 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/helpers/apperr"
-	"github.com/kgjoner/cornucopia/helpers/controller"
-	"github.com/kgjoner/cornucopia/services/media"
-	"github.com/kgjoner/cornucopia/utils/structop"
+	"github.com/kgjoner/cornucopia/v2/helpers/apperr"
+	"github.com/kgjoner/cornucopia/v2/helpers/controller"
+	"github.com/kgjoner/cornucopia/v2/services/media"
+	"github.com/kgjoner/cornucopia/v2/utils/structop"
 	log "github.com/sirupsen/logrus"
 )
 
 type ctxKey string
+
 const ActorLogKey = ctxKey("actor.log")
 
 func NewLogger(r *http.Request, data interface{}) *log.Entry {

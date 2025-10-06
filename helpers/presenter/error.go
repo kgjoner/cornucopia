@@ -6,7 +6,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/kgjoner/cornucopia/helpers/apperr"
+	"github.com/kgjoner/cornucopia/v2/helpers/apperr"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	log "github.com/sirupsen/logrus"

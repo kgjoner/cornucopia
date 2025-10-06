@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kgjoner/cornucopia/utils/structop"
+	"github.com/kgjoner/cornucopia/v2/utils/structop"
 	"github.com/stretchr/testify/assert"
 )
 
