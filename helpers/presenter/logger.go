@@ -2,7 +2,6 @@ package presenter
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
@@ -14,15 +13,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type ctxKey string
+const ActorLogKey = ctxKey("actor.log")
+
 func NewLogger(r *http.Request, data interface{}) *log.Entry {
 	ctx := r.Context()
-
-	actor := ctx.Value(controller.ActorKey)
-	actorV := reflect.ValueOf(actor)
-	actorMap := map[string]interface{}{}
-	if actorV.IsValid() && !actorV.IsZero() {
-		actorMap = structop.New(actor).Map()
-	}
+	actor := ctx.Value(ActorLogKey)
 
 	if err, ok := data.(error); ok {
 		input, ok := ctx.Value(controller.InputKey).(map[string]any)
@@ -30,16 +26,12 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 			removePrivateInputs(input)
 		}
 
-		if len(actorMap) == 0 && input["Application"] != nil {
-			actorMap["ID"] = fmt.Sprintf("Application[%v]", input["Application"])
-		}
-
 		var appErr *apperr.AppError
 		if errors.As(err, &appErr) {
 			return log.WithFields(log.Fields{
 				"Method": r.Method,
 				"Path":   r.URL.Path,
-				"Actor":  actorMap["ID"],
+				"Actor":  actor,
 				"Input":  input,
 				"Kind":   appErr.Kind,
 				"Code":   appErr.Code,
@@ -49,10 +41,10 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 			return log.WithFields(log.Fields{
 				"Method": r.Method,
 				"Path":   r.URL.Path,
-				"Actor":  actorMap["ID"],
+				"Actor":  actor,
 				"Input":  input,
-				"Kind":   "Unexpected",
-				"Code":   "0000001",
+				"Kind":   "Unknown",
+				"Code":   "Unexpected",
 			})
 		}
 	}
@@ -61,7 +53,7 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 		return log.WithFields(log.Fields{
 			"Method": r.Method,
 			"Path":   r.URL.Path,
-			"Actor":  actorMap["ID"],
+			"Actor":  actor,
 			"Kind":   "Creation",
 		})
 	}
@@ -69,7 +61,7 @@ func NewLogger(r *http.Request, data interface{}) *log.Entry {
 	return log.WithFields(log.Fields{
 		"Method": r.Method,
 		"Path":   r.URL.Path,
-		"Actor":  actorMap["ID"],
+		"Actor":  actor,
 	})
 }
 
