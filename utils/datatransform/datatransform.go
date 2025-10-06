@@ -47,7 +47,7 @@ func ToNullRawMessage(obj interface{}) htypes.NullRawMessage {
 
 	return htypes.NullRawMessage{
 		RawMessage: json.RawMessage(data),
-		Valid:      len(data) != 0,
+		Valid:      len(data) != 0 && string(data) != "null",
 	}
 }
 
