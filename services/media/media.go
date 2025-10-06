@@ -2,8 +2,11 @@ package media
 
 import (
 	"bytes"
+	"fmt"
+	"image"
 	"net/http"
 	"reflect"
+	"strings"
 
 	"github.com/kgjoner/cornucopia/helpers/apperr"
 )
@@ -28,7 +31,7 @@ func New(file *bytes.Buffer, mediaService MediaService) *Media {
 }
 
 func (m *Media) IsValid() error {
-	if m.url == "" && (reflect.ValueOf(m.file).IsZero() || reflect.ValueOf(m.mediaService).IsZero()) {
+	if m.url == "" && (m.IsEmpty() || reflect.ValueOf(m.mediaService).IsZero()) {
 		return apperr.NewValidationError("missing fields in media type")
 	}
 
@@ -36,7 +39,11 @@ func (m *Media) IsValid() error {
 }
 
 func (m Media) IsZero() bool {
-	return reflect.ValueOf(m.file).IsZero()
+	return reflect.ValueOf(m).IsZero()
+}
+
+func (m Media) IsEmpty() bool {
+	return m.file == nil || m.file.Len() == 0
 }
 
 // Set optional props that may be used for media service.
@@ -51,7 +58,7 @@ func (m *Media) URL() (string, error) {
 		return m.url, nil
 	}
 
-	if reflect.ValueOf(m.file).IsZero() || reflect.ValueOf(m.mediaService).IsZero() {
+	if m.IsEmpty() || reflect.ValueOf(m.mediaService).IsZero() {
 		return "", apperr.NewValidationError("missing fields in media type")
 	}
 
@@ -62,4 +69,25 @@ func (m *Media) URL() (string, error) {
 
 	m.url = url
 	return url, nil
+}
+
+// Check if media is an image type.
+func (m *Media) IsImage() bool {
+	return strings.Contains(m.mime, "image")
+}
+
+// Get dimensions of a image. Only works for image types.
+func (m *Media) Shape() (width int, height int, err error) {
+	if !m.IsImage() {
+		return 0, 0, fmt.Errorf("must be an image to get its shape")
+	}
+
+	fileCopy := bytes.NewReader(m.file.Bytes())
+	img, _, err := image.Decode(fileCopy)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	bounds := img.Bounds()
+	return bounds.Dx(), bounds.Dy(), nil
 }
