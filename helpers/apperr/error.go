@@ -1,14 +1,15 @@
 package apperr
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
 type AppError struct {
-	Kind    Kind
-	Code    Code
-	Message string
-	Err     error
+	Kind    Kind   `json:"kind"`
+	Code    Code   `json:"code"`
+	Message string `json:"message"`
+	Err     error  `json:"-"`
 }
 
 func (e *AppError) Error() string {
@@ -20,6 +21,18 @@ func (e *AppError) Error() string {
 
 func (e *AppError) Unwrap() error {
 	return e.Err
+}
+
+func (e *AppError) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Kind    Kind   `json:"kind"`
+		Code    Code   `json:"code"`
+		Message string `json:"message"`
+	}{
+		Kind:    e.Kind,
+		Code:    e.Code,
+		Message: e.Error(),
+	})
 }
 
 // New creates a new AppError.
