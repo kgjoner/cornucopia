@@ -23,8 +23,8 @@ func TestRequiredField(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error, got nil")
 		return
-	} else if !strings.Contains(err.Error(), "Required") {
-		t.Errorf("Expected Required error, got %s", err)
+	} else if !strings.Contains(err.Error(), "required") {
+		t.Errorf("Expected required error, got %s", err)
 	}
 
 	structSample := StructSample{}
@@ -32,8 +32,8 @@ func TestRequiredField(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error, got nil")
 		return
-	} else if !strings.Contains(err.Error(), "Required") {
-		t.Errorf("Expected Required error, got %s", err)
+	} else if !strings.Contains(err.Error(), "required") {
+		t.Errorf("Expected required error, got %s", err)
 	}
 
 	structSample.Age = 21
@@ -41,8 +41,14 @@ func TestRequiredField(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "Name: ") {
 		t.Errorf("Expected error, got %v", err)
 		return
-	} else if !strings.Contains(err.Error(), "Name: Required") {
-		t.Errorf("Expected Required error, got %s", err)
+	} else if !strings.Contains(err.Error(), "Name: required") {
+		t.Errorf("Expected required error, got %s", err)
+	}
+
+	structSample.Name = "John"
+	err = Validate(structSample, "required")
+	if err != nil {
+		t.Errorf("Expected nil, got %v", err)
 	}
 }
 
@@ -50,9 +56,9 @@ func TestPasswordValidation(t *testing.T) {
 	validations := []string{"required", "min=8", "atLeastOne=letter number specialChar"}
 
 	err := Validate("", validations...)
-	assert.Contains(t, err.Error(), "Required")
+	assert.Contains(t, err.Error(), "required")
 
-	err = Validate("1234", validations...)
+	err = Validate("1a$2", validations...)
 	assert.Contains(t, err.Error(), "at least 8 char")
 
 	err = Validate("12345678", validations...)

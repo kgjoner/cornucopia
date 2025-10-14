@@ -64,7 +64,9 @@ func assertSelfValidation(primitive interface{}) error {
 
 	if v, ok := p.(Validator); ok {
 		err := v.IsValid()
-		return apperr.Wrap(err, apperr.Validation, apperr.InvalidData, "invalid internal data")
+		if err != nil {
+			return apperr.Wrap(err, apperr.Validation, apperr.InvalidData, "invalid internal data")
+		}
 	}
 
 	return nil
