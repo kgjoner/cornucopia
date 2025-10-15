@@ -12,6 +12,54 @@ import (
 	"github.com/kgjoner/cornucopia/v2/utils/structop"
 )
 
+// Implements Scanner for anything coming from json. It normalizes keys and timestamps.
+// For example: created_at, createdAt, CreatedAt are considered all the same, normalized to createdat.
+// Timestamps without timezone are normalized to have Z timezone.
+func FromJSON[K any](v *K) interface{ sql.Scanner } {
+	return &fromJSONScan[K]{
+		value: v,
+	}
+}
+
+type fromJSONScan[K any] struct {
+	value *K
+}
+
+func (s *fromJSONScan[K]) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+
+	if s.value == nil {
+		s.value = new(K)
+	}
+
+	if v, ok := value.([]byte); ok {
+		var dataAsInterface interface{}
+		err := json.Unmarshal(v, &dataAsInterface)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal data: %w", err)
+		}
+
+		// Recursively normalize all keys
+		normalizedData := normalizeMapKeys(dataAsInterface)
+		normalizedData = normalizeTimestamps(normalizedData)
+
+		v, err = json.Marshal(normalizedData)
+		if err != nil {
+			return fmt.Errorf("failed to re-marshal data: %w", err)
+		}
+
+		if err := json.Unmarshal(v, s.value); err != nil {
+			return fmt.Errorf("failed to unmarshal json: %w", err)
+		}
+
+		return nil
+	}
+
+	return fmt.Errorf("failed to scan from json")
+}
+
 // Implements Scanner for structs
 func Struct[K any](v *K) interface{ sql.Scanner } {
 	return &structScan[K]{
