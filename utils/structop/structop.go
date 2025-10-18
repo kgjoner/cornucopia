@@ -239,7 +239,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 						quotedString := `"` + edited.String() + `"`
 						byteArr = []byte(quotedString)
 					} else {
-						return nil
+						byteArr = edited.Convert(reflect.TypeOf([]byte{})).Interface().([]byte)
 					}
 				} else {
 					data, err := marshaller.MarshalJSON()
