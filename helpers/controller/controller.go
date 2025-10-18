@@ -46,18 +46,18 @@ func New(req *http.Request) *Controller {
 	}
 }
 
+// Add value from context using the provided key. If the value is not found, it does nothing.
 func (c *Controller) AddFromContext(key any, field string) *Controller {
 	if c.err != nil {
 		return c
 	}
 
-	token := c.req.Context().Value(key)
-	if token == nil {
-		c.err = apperr.NewInternalError("field \"" + field + "\" should have been set")
+	ctxValue := c.req.Context().Value(key)
+	if ctxValue == nil {
 		return c
 	}
 
-	c.fields[field] = token
+	c.fields[field] = ctxValue
 	return c
 }
 
