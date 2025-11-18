@@ -277,7 +277,7 @@ func (c *Controller) AddHeader(header string, field ...string) *Controller {
 	return c
 }
 
-func (c *Controller) AddIp() *Controller {
+func (c *Controller) AddIP() *Controller {
 	c.fields["ip"] = c.req.RemoteAddr
 	return c
 }

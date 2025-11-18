@@ -400,7 +400,7 @@ func TestAddIp(t *testing.T) {
 	req.RemoteAddr = "192.168.1.1:8080"
 
 	ctrl := controller.New(req)
-	result := ctrl.AddIp()
+	result := ctrl.AddIP()
 
 	var testStruct struct {
 		Ip string
@@ -546,7 +546,7 @@ func TestChainedOperations(t *testing.T) {
 		AddActor().
 		AddPagination().
 		AddHeader("Authorization").
-		AddIp()
+		AddIP()
 
 	var testStruct struct {
 		Token         string
