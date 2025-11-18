@@ -192,13 +192,21 @@ func wordID(str string, _ []string) error {
 		return nil
 	}
 
-	doesMatch, err := regexp.MatchString(`^[a-zA-Z0-9.]+$`, str)
+	doesMatch, err := regexp.MatchString(`^[a-zA-Z0-9._-]+$`, str)
 	if err != nil {
 		return err
-	} else if doesMatch {
+	} else if !doesMatch {
+		msg := "must have only letters, numbers, period, underscore, and hyphen"
+		return apperr.NewValidationError(msg)
+	}
+	
+	doesMatch, err = regexp.MatchString(`[._-]{2}`, str)
+	if err != nil {
+		return err
+	} else if !doesMatch {
 		return nil
 	}
 
-	msg := "must have only letters, numbers and period."
+	msg := "must not have consecutive period, underscore, and hyphen"
 	return apperr.NewValidationError(msg)
 }

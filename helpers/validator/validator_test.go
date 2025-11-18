@@ -52,6 +52,50 @@ func TestRequiredField(t *testing.T) {
 	}
 }
 
+func TestWordID(t *testing.T) {
+	validWordIDs := []string{
+		"wordID_123",
+		"Word.ID-456",
+		"wordid",
+		"W123",
+	}
+
+	invalidWordIDs := []string{
+		"word id",
+		"word@id",
+		"word$id",
+		"word/id",
+		"word,id",
+		"word!id",
+		"word#id",
+	}
+
+	consecutiveInvalidWordIDs := []string{
+		"word__id",
+		"word..id",
+		"word--id",
+		"word.-id",
+		"word_.id",
+	}
+
+	for _, wordID := range validWordIDs {
+		err := Validate(wordID, "wordID")
+		assert.Nil(t, err, "Expected valid wordID to pass validation: %s", wordID)
+	}
+
+	for _, wordID := range invalidWordIDs {
+		err := Validate(wordID, "wordID")
+		assert.NotNil(t, err, "Expected invalid wordID to fail validation: %s", wordID)
+		assert.Contains(t, err.Error(), "must have only letters, numbers, period, underscore, and hyphen")
+	}
+
+	for _, wordID := range consecutiveInvalidWordIDs {
+		err := Validate(wordID, "wordID")
+		assert.NotNil(t, err, "Expected invalid wordID to fail validation: %s", wordID)
+		assert.Contains(t, err.Error(), "must not have consecutive period, underscore, and hyphen")
+	}
+}
+
 func TestPasswordValidation(t *testing.T) {
 	validations := []string{"required", "min=8", "atLeastOne=letter number specialChar"}
 
