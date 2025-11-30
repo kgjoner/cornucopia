@@ -11,6 +11,10 @@ import (
 type PhoneNumber string
 
 func ParsePhoneNumber(str string) (PhoneNumber, error) {
+	if str == "" {
+		return "", nil
+	}
+
 	s := "+" + sanitizer.Digit(str)
 	p := PhoneNumber(s)
 	return p, p.IsValid()
