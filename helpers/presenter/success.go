@@ -32,7 +32,7 @@ type successResponse struct {
 	Data any `json:"data"`
 }
 
-func HTTPSuccess(data interface{}, w http.ResponseWriter, r *http.Request, status ...int) http.ResponseWriter {
+func HTTPSuccess(data any, w http.ResponseWriter, r *http.Request, status ...int) http.ResponseWriter {
 	var statusCode int
 	if len(status) == 0 {
 		statusCode = http.StatusOK
@@ -66,7 +66,11 @@ func HTTPSuccess(data interface{}, w http.ResponseWriter, r *http.Request, statu
 		if field.IsValid() {
 			res = data
 		} else {
-			res = successResponse{data}
+			if dataV.IsZero() {
+				res = successResponse{nil}
+			} else {
+				res = successResponse{data}
+			}
 		}
 	} else {
 		res = successResponse{data}
