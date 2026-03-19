@@ -3,10 +3,10 @@ package dbhandler
 import (
 	"database/sql"
 
-	"github.com/kgjoner/cornucopia/v2/htypes"
+	"github.com/kgjoner/cornucopia/v2/prim"
 )
 
-func HandleListQuery[T any](rows *sql.Rows, pag *htypes.Pagination, dest func(item *T) []any) (*htypes.PaginatedData[T], error) {
+func HandleListQuery[T any](rows *sql.Rows, pag *prim.Pagination, dest func(item *T) []any) (*prim.PaginatedData[T], error) {
 	items := []T{}
 	for rows.Next() {
 		var item T
@@ -30,7 +30,7 @@ func HandleListQuery[T any](rows *sql.Rows, pag *htypes.Pagination, dest func(it
 		items = items[:pag.Limit]
 	}
 
-	return htypes.NewPaginatedData(*pag, items), nil
+	return prim.NewPaginatedData(*pag, items), nil
 }
 
 func HandleListQueryWithoutPagination[T any](rows *sql.Rows, dest func(item *T) []any) ([]T, error) {

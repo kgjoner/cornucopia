@@ -1,4 +1,4 @@
-package htypes
+package prim
 
 import (
 	"encoding/json"
@@ -80,4 +80,13 @@ func (p *PhoneNumber) UnmarshalJSON(data []byte) error {
 
 	*p, err = ParsePhoneNumber(s)
 	return err
+}
+
+func (p *PhoneNumber) UnmarshalText(text []byte) error {
+	parsed, err := ParsePhoneNumber(string(text))
+	if err != nil {
+		return err
+	}
+	*p = parsed
+	return nil
 }

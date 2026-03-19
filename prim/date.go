@@ -1,10 +1,9 @@
-package htypes
+package prim
 
 import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -35,28 +34,16 @@ func (d Date) MarshalJSON() ([]byte, error) {
 	return json.Marshal(d.Time.Format(DateFormat))
 }
 
-func (d *Date) UnmarshalJSON(data []byte) error {
-	// Handle null values
-	if string(data) == "null" {
+func (d *Date) UnmarshalText(text []byte) error {
+	s := string(text)
+	if s == "" {
 		*d = Date{}
 		return nil
 	}
-
-	// Remove quotes from JSON string
-	str := strings.Trim(string(data), `"`)
-
-	// Handle empty string
-	if str == "" {
-		*d = Date{}
-		return nil
-	}
-
-	// Parse the date
-	t, err := time.Parse(DateFormat, str)
+	t, err := time.Parse(DateFormat, s)
 	if err != nil {
-		return fmt.Errorf("cannot parse date %q: %w", str, err)
+		return fmt.Errorf("cannot parse date %q: %w", s, err)
 	}
-
 	*d = Date{Time: t}
 	return nil
 }

@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kgjoner/cornucopia/v2/htypes"
 	"github.com/kgjoner/cornucopia/v2/media"
+	"github.com/kgjoner/cornucopia/v2/prim"
 )
 
 type structop struct {
@@ -214,7 +214,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 		}
 	}
 
-	if edited.Type() == reflect.TypeOf(htypes.NullRawMessage{}) {
+	if edited.Type() == reflect.TypeOf(prim.NullRawMessage{}) {
 		edited = edited.FieldByName("RawMessage")
 		return setValue(target, edited, opt)
 	}
@@ -267,7 +267,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 
 		switch target.Kind() {
 		case reflect.Struct:
-			if target.Type() == reflect.TypeOf(htypes.NullTime{}) &&
+			if target.Type() == reflect.TypeOf(prim.NullTime{}) &&
 				edited.Type() == reflect.TypeOf(time.Time{}) {
 				timeV := target.FieldByName("Time")
 				timeV.Set(edited)
@@ -325,7 +325,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 
 			edited = reflect.ValueOf(uuid)
 
-		case reflect.TypeOf(time.Now()), reflect.TypeOf(htypes.NullTime{}):
+		case reflect.TypeOf(time.Now()), reflect.TypeOf(prim.NullTime{}):
 			timeFormats := []string{
 				time.RFC3339,
 				"2006-01-02",
@@ -345,8 +345,8 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 				return err
 			}
 
-			if target.Type() == reflect.TypeOf(htypes.NullTime{}) {
-				edited = reflect.ValueOf(htypes.NullTime{Time: v})
+			if target.Type() == reflect.TypeOf(prim.NullTime{}) {
+				edited = reflect.ValueOf(prim.NullTime{Time: v})
 			} else {
 				edited = reflect.ValueOf(v)
 			}
@@ -412,7 +412,7 @@ func setValue(target reflect.Value, edited reflect.Value, opt *setValueOption) e
 			setValue(target, reflect.ValueOf(""), opt)
 		}
 
-	} else if nullRawMsg, ok := edited.Interface().(htypes.NullRawMessage); ok {
+	} else if nullRawMsg, ok := edited.Interface().(prim.NullRawMessage); ok {
 		rawString := bytes.NewBuffer(nullRawMsg.RawMessage).String()
 		return setValue(target, reflect.ValueOf(rawString), opt)
 	}

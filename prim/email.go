@@ -1,4 +1,4 @@
-package htypes
+package prim
 
 import (
 	"encoding/json"
@@ -66,6 +66,15 @@ func (e *Email) UnmarshalJSON(data []byte) error {
 
 	*e, err = ParseEmail(s)
 	return err
+}
+
+func (e *Email) UnmarshalText(text []byte) error {
+	parsed, err := ParseEmail(string(text))
+	if err != nil {
+		return err
+	}
+	*e = parsed
+	return nil
 }
 
 // Deprecated: Use ParseEmail instead

@@ -1,14 +1,14 @@
-package htypes
+package prim
 
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/kgjoner/cornucopia/v2/apperr"
 	"github.com/kgjoner/cornucopia/v2/sanitizer"
-	"github.com/kgjoner/cornucopia/v2/sliceman"
 	"github.com/kgjoner/cornucopia/v2/validator"
 )
 
@@ -116,7 +116,7 @@ func validateCpf(cpf string) error {
 		"88888888888",
 		"99999999999",
 	}
-	if sliceman.IndexOf(invalidNumbers, cpf) != -1 {
+	if slices.Index(invalidNumbers, cpf) != -1 {
 		return apperr.NewValidationError("invalid CPF")
 	}
 
@@ -175,7 +175,7 @@ func validateCnpj(cnpj string) error {
 		"88888888888888",
 		"99999999999999",
 	}
-	if sliceman.IndexOf(invalidNumbers, cnpj) != -1 {
+	if slices.Index(invalidNumbers, cnpj) != -1 {
 		return apperr.NewValidationError("invalid CNPJ")
 	}
 

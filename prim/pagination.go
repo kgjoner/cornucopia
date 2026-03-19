@@ -1,4 +1,4 @@
-package htypes
+package prim
 
 type Pagination struct {
 	Page    int  `json:"page"`
@@ -49,9 +49,9 @@ func TransformPaginatedData[K, T any](data *PaginatedData[T], transformer func(d
 	}
 
 	return &PaginatedData[K]{
-		Data: outputData,
-		Page: data.Page,
-		Limit: data.Limit,
+		Data:    outputData,
+		Page:    data.Page,
+		Limit:   data.Limit,
 		HasNext: data.HasNext,
 	}
 }

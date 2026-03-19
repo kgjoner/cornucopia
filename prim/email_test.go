@@ -1,34 +1,34 @@
-package htypes_test
+package prim_test
 
 import (
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/htypes"
+	"github.com/kgjoner/cornucopia/v2/prim"
 	"github.com/kgjoner/cornucopia/v2/validator"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEmailValidation(t *testing.T) {
-	empty := htypes.Email("")
+	empty := prim.Email("")
 	err := empty.IsValid()
 	assert.Nil(t, err)
 
-	invalid := htypes.Email("test.com")
+	invalid := prim.Email("test.com")
 	err = invalid.IsValid()
 	assert.NotNil(t, err)
 
-	valid := htypes.Email("test@test.com")
+	valid := prim.Email("test@test.com")
 	err = valid.IsValid()
 	assert.Nil(t, err)
 
 	insideStr := struct {
 		Name  string
-		Email htypes.Email `validate:"required"`
+		Email prim.Email `validate:"required"`
 	}{
 		"Dummy",
 		empty,
 	}
 	err = validator.Validate(insideStr)
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "Email: Required")
+	assert.Contains(t, err.Error(), "Email: required")
 }

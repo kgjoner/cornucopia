@@ -1,10 +1,10 @@
-package htypes_test
+package prim_test
 
 import (
 	"encoding/json"
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/htypes"
+	"github.com/kgjoner/cornucopia/v2/prim"
 )
 
 func TestCountry(t *testing.T) {
@@ -68,7 +68,7 @@ func TestCountry(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			country, err := htypes.ParseCountry(tt.input)
+			country, err := prim.ParseCountry(tt.input)
 			if (err == nil) != tt.wantValid {
 				t.Errorf("Country.IsValid() error = %v, wantValid %v", err, tt.wantValid)
 			}
@@ -98,7 +98,7 @@ func TestCountry(t *testing.T) {
 			}
 
 			// Test UnmarshalJSON()
-			var unmarshalledCountry htypes.Country
+			var unmarshalledCountry prim.Country
 			err = json.Unmarshal([]byte(`"`+tt.input+`"`), &unmarshalledCountry)
 			if (err != nil) != tt.wantUnmarshalErr {
 				t.Errorf("json.Unmarshal() error = %v, wantUnmarshalErr %v", err, tt.wantUnmarshalErr)
@@ -114,7 +114,7 @@ func TestCountry(t *testing.T) {
 func TestCountryEdgeCases(t *testing.T) {
 	// Test invalid JSON format
 	t.Run("Invalid JSON", func(t *testing.T) {
-		var country htypes.Country
+		var country prim.Country
 		err := json.Unmarshal([]byte(`"unclosed`), &country)
 		if err == nil {
 			t.Error("Expected error for invalid JSON, got nil")
@@ -123,7 +123,7 @@ func TestCountryEdgeCases(t *testing.T) {
 
 	// Test JSON round-trip
 	t.Run("JSON round-trip", func(t *testing.T) {
-		original := htypes.Country("BR")
+		original := prim.Country("BR")
 
 		// Marshal
 		jsonData, err := json.Marshal(original)
@@ -132,7 +132,7 @@ func TestCountryEdgeCases(t *testing.T) {
 		}
 
 		// Unmarshal
-		var roundTrip htypes.Country
+		var roundTrip prim.Country
 		err = json.Unmarshal(jsonData, &roundTrip)
 		if err != nil {
 			t.Fatalf("json.Unmarshal() error = %v", err)

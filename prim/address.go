@@ -1,4 +1,4 @@
-package htypes
+package prim
 
 type Address struct {
 	Line1        string  `json:"line1" validate:"required"`

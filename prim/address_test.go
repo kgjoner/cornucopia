@@ -1,25 +1,25 @@
-package htypes_test
+package prim_test
 
 import (
 	"encoding/json"
 	"reflect"
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/htypes"
+	"github.com/kgjoner/cornucopia/v2/prim"
 )
 
 type TestStruct struct {
-	Address htypes.Address `json:"address,omitempty"`
+	Address prim.Address `json:"address,omitempty"`
 }
 
 func (t TestStruct) MarshalJSON() ([]byte, error) {
-	var pointer *htypes.Address
+	var pointer *prim.Address
 	if !t.Address.IsZero() {
 		pointer = &t.Address
 	}
 
 	return json.Marshal(&struct {
-		Address *htypes.Address `json:"address,omitempty"`
+		Address *prim.Address `json:"address,omitempty"`
 	}{
 		Address: pointer,
 	})

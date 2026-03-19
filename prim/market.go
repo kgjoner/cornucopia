@@ -1,4 +1,4 @@
-package htypes
+package prim
 
 import (
 	_ "embed"
@@ -81,6 +81,11 @@ func (m *Market) UnmarshalJSON(data []byte) error {
 	}
 
 	*m = Market(strings.ToLower(str))
+	return validator.Validate(*m)
+}
+
+func (m *Market) UnmarshalText(text []byte) error {
+	*m = Market(strings.ToLower(string(text)))
 	return validator.Validate(*m)
 }
 

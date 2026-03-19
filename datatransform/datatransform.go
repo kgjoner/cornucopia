@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kgjoner/cornucopia/v2/htypes"
+	"github.com/kgjoner/cornucopia/v2/prim"
 )
 
 func ToRawMessage(obj interface{}) json.RawMessage {
@@ -32,9 +32,9 @@ func ToRawMessageSlice[T any](objSlc []T) []json.RawMessage {
 	return res
 }
 
-func ToNullRawMessage(obj interface{}) htypes.NullRawMessage {
+func ToNullRawMessage(obj interface{}) prim.NullRawMessage {
 	if reflect.ValueOf(obj).IsZero() {
-		return htypes.NullRawMessage{
+		return prim.NullRawMessage{
 			RawMessage: nil,
 			Valid:      false,
 		}
@@ -45,7 +45,7 @@ func ToNullRawMessage(obj interface{}) htypes.NullRawMessage {
 		panic(err)
 	}
 
-	return htypes.NullRawMessage{
+	return prim.NullRawMessage{
 		RawMessage: json.RawMessage(data),
 		Valid:      len(data) != 0 && string(data) != "null",
 	}

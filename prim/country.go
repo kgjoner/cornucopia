@@ -1,4 +1,4 @@
-package htypes
+package prim
 
 import (
 	_ "embed"
