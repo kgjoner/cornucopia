@@ -3,9 +3,8 @@ package pwdgen
 import (
 	cryptorand "crypto/rand"
 	"math/big"
+	"slices"
 	"strings"
-
-	"github.com/kgjoner/cornucopia/v2/sliceman"
 )
 
 // CharSet represents available character sets
@@ -31,7 +30,7 @@ func GeneratePassword(length int, sets ...CharSet) string {
 	}
 
 	fullSet := ""
-	if sliceman.IndexOf(sets, Lower) != -1 {
+	if slices.Index(sets, Lower) != -1 {
 		lowerCharSet := "abcdefghijklmnopqrstuvwxyz"
 		fullSet += lowerCharSet
 
@@ -39,7 +38,7 @@ func GeneratePassword(length int, sets ...CharSet) string {
 		password.WriteString(string(lowerCharSet[index]))
 	}
 
-	if sliceman.IndexOf(sets, Upper) != -1 {
+	if slices.Index(sets, Upper) != -1 {
 		upperCharSet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		fullSet += upperCharSet
 
@@ -47,7 +46,7 @@ func GeneratePassword(length int, sets ...CharSet) string {
 		password.WriteString(string(upperCharSet[index]))
 	}
 
-	if sliceman.IndexOf(sets, Number) != -1 {
+	if slices.Index(sets, Number) != -1 {
 		numberSet := "0123456789"
 		fullSet += numberSet
 
@@ -55,7 +54,7 @@ func GeneratePassword(length int, sets ...CharSet) string {
 		password.WriteString(string(numberSet[index]))
 	}
 
-	if sliceman.IndexOf(sets, Special) != -1 {
+	if slices.Index(sets, Special) != -1 {
 		specialCharSet := "!@#$%&*"
 		fullSet += specialCharSet
 

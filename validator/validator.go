@@ -3,11 +3,11 @@ package validator
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 
 	"github.com/kgjoner/cornucopia/v2/apperr"
-	"github.com/kgjoner/cornucopia/v2/sliceman"
 	v "github.com/kgjoner/cornucopia/v2/validator/internal"
 )
 
@@ -81,7 +81,7 @@ func validateArray(arr reflect.Value, validations []string) error {
 			if arr.IsZero() || length == 0 {
 				return apperr.NewValidationError("required")
 			}
-			validations = sliceman.Remove(validations, i)
+			validations = slices.Delete(validations, i, i+1)
 		} else {
 			forwardedValidations = append(forwardedValidations, validation)
 		}
@@ -107,7 +107,7 @@ func validateMap(mp reflect.Value, validations []string) error {
 			if mp.IsZero() || length == 0 {
 				return apperr.NewValidationError("required")
 			}
-			validations = sliceman.Remove(validations, i)
+			validations = slices.Delete(validations, i, i+1)
 		} else {
 			forwardedValidations = append(forwardedValidations, validation)
 		}
