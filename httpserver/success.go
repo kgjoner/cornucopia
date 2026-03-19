@@ -1,4 +1,4 @@
-package presenter
+package httpserver
 
 import (
 	"encoding/json"
@@ -24,7 +24,7 @@ var (
 	})
 )
 
-type Success[T any] struct {
+type SuccessResponse[T any] struct {
 	Data T
 }
 
@@ -32,7 +32,7 @@ type successResponse struct {
 	Data any `json:"data"`
 }
 
-func HTTPSuccess(data any, w http.ResponseWriter, r *http.Request, status ...int) http.ResponseWriter {
+func Success(data any, w http.ResponseWriter, r *http.Request, status ...int) http.ResponseWriter {
 	var statusCode int
 	if len(status) == 0 {
 		statusCode = http.StatusOK

@@ -1,4 +1,4 @@
-package presenter
+package httpserver
 
 import (
 	"context"
@@ -53,7 +53,7 @@ var (
 	}
 )
 
-func HTTPError(err error, w http.ResponseWriter, r *http.Request) {
+func Error(err error, w http.ResponseWriter, r *http.Request) {
 	var status int
 	var logLevel log.Level
 	var e *apperr.AppError
