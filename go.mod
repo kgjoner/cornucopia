@@ -1,6 +1,6 @@
 module github.com/kgjoner/cornucopia/v2
 
-go 1.19
+go 1.25
 
 require github.com/stretchr/testify v1.8.4
 
