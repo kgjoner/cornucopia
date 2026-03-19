@@ -1,4 +1,4 @@
-package httputil
+package httpclient
 
 import (
 	"bytes"
@@ -11,14 +11,14 @@ import (
 	"github.com/kgjoner/cornucopia/v2/apperr"
 )
 
-type HTTPUtil struct {
+type Client struct {
 	client         *http.Client
 	baseURL        string
 	defaultOptions *Options
 }
 
-func New(baseURL string) *HTTPUtil {
-	return &HTTPUtil{
+func New(baseURL string) *Client {
+	return &Client{
 		client: &http.Client{
 			Timeout: 60 * time.Second,
 		},
@@ -31,33 +31,33 @@ type Options struct {
 	Headers map[string]string
 }
 
-func (u *HTTPUtil) SetDefaultOptions(opt *Options) {
+func (u *Client) SetDefaultOptions(opt *Options) {
 	u.defaultOptions = opt
 }
 
 type Executer func(data any) (*http.Response, error)
 
-func (u HTTPUtil) Get(path string, opt *Options) Executer {
+func (u Client) Get(path string, opt *Options) Executer {
 	return u.request("GET", path, nil, opt)
 }
 
-func (u HTTPUtil) Delete(path string, opt *Options) Executer {
+func (u Client) Delete(path string, opt *Options) Executer {
 	return u.request("DELETE", path, nil, opt)
 }
 
-func (u HTTPUtil) Post(path string, body map[string]any, opt *Options) Executer {
+func (u Client) Post(path string, body map[string]any, opt *Options) Executer {
 	return u.request("POST", path, body, opt)
 }
 
-func (u HTTPUtil) Put(path string, body map[string]any, opt *Options) Executer {
+func (u Client) Put(path string, body map[string]any, opt *Options) Executer {
 	return u.request("PUT", path, body, opt)
 }
 
-func (u HTTPUtil) Patch(path string, body map[string]any, opt *Options) Executer {
+func (u Client) Patch(path string, body map[string]any, opt *Options) Executer {
 	return u.request("PATCH", path, body, opt)
 }
 
-func (u HTTPUtil) request(method string, path string, inputtedBody map[string]any, opt *Options) Executer {
+func (u Client) request(method string, path string, inputtedBody map[string]any, opt *Options) Executer {
 	var body io.Reader = nil
 	if inputtedBody != nil {
 		jsonBody, err := json.Marshal(inputtedBody)
