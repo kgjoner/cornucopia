@@ -1,0 +1,192 @@
+package validator
+
+import (
+	"errors"
+	"strings"
+	"testing"
+
+	"github.com/kgjoner/cornucopia/v2/apperr"
+	"github.com/stretchr/testify/assert"
+)
+
+type StructSample struct {
+	Name string `validate:"required"`
+	Age  int
+}
+
+func (s StructSample) IsValid() error {
+	return nil
+}
+
+func TestRequiredField(t *testing.T) {
+	err := Validate("", "required")
+	if err == nil {
+		t.Errorf("Expected error, got nil")
+		return
+	} else if !strings.Contains(err.Error(), "required") {
+		t.Errorf("Expected required error, got %s", err)
+	}
+
+	structSample := StructSample{}
+	err = Validate(structSample, "required")
+	if err == nil {
+		t.Errorf("Expected error, got nil")
+		return
+	} else if !strings.Contains(err.Error(), "required") {
+		t.Errorf("Expected required error, got %s", err)
+	}
+
+	structSample.Age = 21
+	err = Validate(structSample, "required")
+	if err == nil || !strings.Contains(err.Error(), "Name: ") {
+		t.Errorf("Expected error, got %v", err)
+		return
+	} else if !strings.Contains(err.Error(), "Name: required") {
+		t.Errorf("Expected required error, got %s", err)
+	}
+
+	structSample.Name = "John"
+	err = Validate(structSample, "required")
+	if err != nil {
+		t.Errorf("Expected nil, got %v", err)
+	}
+}
+
+func TestWordID(t *testing.T) {
+	validWordIDs := []string{
+		"wordID_123",
+		"Word.ID-456",
+		"wordid",
+		"W123",
+	}
+
+	invalidWordIDs := []string{
+		"word id",
+		"word@id",
+		"word$id",
+		"word/id",
+		"word,id",
+		"word!id",
+		"word#id",
+	}
+
+	consecutiveInvalidWordIDs := []string{
+		"word__id",
+		"word..id",
+		"word--id",
+		"word.-id",
+		"word_.id",
+	}
+
+	for _, wordID := range validWordIDs {
+		err := Validate(wordID, "wordID")
+		assert.Nil(t, err, "Expected valid wordID to pass validation: %s", wordID)
+	}
+
+	for _, wordID := range invalidWordIDs {
+		err := Validate(wordID, "wordID")
+		assert.NotNil(t, err, "Expected invalid wordID to fail validation: %s", wordID)
+		assert.Contains(t, err.Error(), "must have only letters, numbers, period, underscore, and hyphen")
+	}
+
+	for _, wordID := range consecutiveInvalidWordIDs {
+		err := Validate(wordID, "wordID")
+		assert.NotNil(t, err, "Expected invalid wordID to fail validation: %s", wordID)
+		assert.Contains(t, err.Error(), "must not have consecutive period, underscore, and hyphen")
+	}
+}
+
+func TestPasswordValidation(t *testing.T) {
+	validations := []string{"required", "min=8", "atLeastOne=letter number specialChar"}
+
+	err := Validate("", validations...)
+	assert.Contains(t, err.Error(), "required")
+
+	err = Validate("1a$2", validations...)
+	assert.Contains(t, err.Error(), "at least 8 char")
+
+	err = Validate("12345678", validations...)
+	assert.Contains(t, err.Error(), "at least 1 letter 1 number 1 special char")
+
+	err = Validate("1234ABCD", validations...)
+	assert.Contains(t, err.Error(), "at least 1 letter 1 number 1 special char")
+
+	err = Validate("Abcdefg!", validations...)
+	assert.Contains(t, err.Error(), "at least 1 letter 1 number 1 special char")
+
+	err = Validate("Abc1234!", validations...)
+	assert.Nil(t, err)
+}
+
+func TestPointerSubstruct(t *testing.T) {
+	type ParentStruct struct {
+		Name   string `validate:"required"`
+		Sample *StructSample
+	}
+
+	err := Validate(ParentStruct{Name: "name"})
+	assert.Nil(t, err)
+}
+
+// Write a test for the Enum validation
+
+type SliceEnum string
+
+const (
+	EnumValue1 SliceEnum = "value1"
+	EnumValue2 SliceEnum = "value2"
+)
+
+func (e SliceEnum) Enumerate() any {
+	return []Enum{EnumValue1, EnumValue2}
+}
+
+type StructEnum string
+
+func (e StructEnum) Enumerate() any {
+	return struct {
+		Value1 StructEnum
+		Value2 StructEnum
+	}{
+		Value1: "value1",
+		Value2: "value2",
+	}
+}
+
+func TestEnumValidation(t *testing.T) {
+	// Test Enum with slice enumeration
+	type WithSliceEnum struct {
+		Value SliceEnum
+	}
+
+	valid1 := WithSliceEnum{Value: EnumValue1}
+	err := Validate(valid1)
+	assert.Nil(t, err)
+
+	var appErr *apperr.AppError
+	invalid1 := WithSliceEnum{Value: "invalid"}
+	err = Validate(invalid1)
+	assert.NotNil(t, err)
+	assert.True(t, errors.As(err, &appErr))
+	assert.Equal(t, appErr.Code, apperr.InvalidData)
+
+	valid1_empty := WithSliceEnum{Value: ""}
+	err = Validate(valid1_empty)
+	assert.Nil(t, err)
+
+	// Test Enum with struct enumeration
+	type WithStructEnum struct {
+		Value StructEnum
+	}
+
+	valid2 := WithStructEnum{Value: StructEnum("value1")}
+	err = Validate(valid2)
+	assert.Nil(t, err)
+
+	invalid2 := WithStructEnum{Value: StructEnum("invalid")}
+	err = Validate(invalid2)
+	assert.NotNil(t, err)
+	assert.NotNil(t, err)
+	assert.True(t, errors.As(err, &appErr))
+	assert.Equal(t, appErr.Code, apperr.InvalidData)
+}

@@ -3,8 +3,8 @@ package integration_test
 import (
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/helpers/htypes"
-	"github.com/kgjoner/cornucopia/v2/utils/structop"
+	"github.com/kgjoner/cornucopia/v2/htypes"
+	"github.com/kgjoner/cornucopia/v2/structop"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
