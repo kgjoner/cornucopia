@@ -5,11 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strconv"
 	"strings"
-
-	"github.com/kgjoner/cornucopia/v2/structop"
 )
 
 // Implements Scanner for anything coming from json. It normalizes keys and timestamps.
@@ -35,23 +32,8 @@ func (s *fromJSONScan[K]) Scan(value interface{}) error {
 	}
 
 	if v, ok := value.([]byte); ok {
-		var dataAsInterface interface{}
-		err := json.Unmarshal(v, &dataAsInterface)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal data: %w", err)
-		}
-
-		// Recursively normalize all keys
-		normalizedData := normalizeMapKeys(dataAsInterface)
-		normalizedData = normalizeTimestamps(normalizedData)
-
-		v, err = json.Marshal(normalizedData)
-		if err != nil {
-			return fmt.Errorf("failed to re-marshal data: %w", err)
-		}
-
-		if err := json.Unmarshal(v, s.value); err != nil {
-			return fmt.Errorf("failed to unmarshal json: %w", err)
+		if err := unmarshalNormalizedJSON(v, s.value); err != nil {
+			return fmt.Errorf("failed to unmarshal normalized json: %w", err)
 		}
 
 		return nil
@@ -81,24 +63,7 @@ func (s *structScan[K]) Scan(value interface{}) error {
 	}
 
 	if v, ok := value.([]byte); ok {
-		var data map[string]any
-		err := json.Unmarshal(v, &data)
-		if err != nil {
-			return err
-		}
-
-		if reflect.Indirect(reflect.ValueOf(s.value)).Kind() == reflect.Pointer {
-			pointer := reflect.Indirect(reflect.ValueOf(s.value))
-			if pointer.IsNil() {
-				pointer.Set(reflect.New(reflect.TypeOf(*s.value).Elem()))
-			}
-
-			err = structop.New(*s.value).UpdateViaMap(data)
-			return err
-		}
-
-		err = structop.New(s.value).UpdateViaMap(data)
-		return err
+		return unmarshalNormalizedJSON(v, s.value)
 	}
 
 	return fmt.Errorf("failed to scan struct")
@@ -134,19 +99,34 @@ func (a *structArrayScan[K]) scanBytes(src []byte) error {
 	} else {
 		b := make(structArrayScan[K], len(elems))
 		for i, v := range elems {
-			var data map[string]any
-			err := json.Unmarshal(v, &data)
-			if err != nil {
-				return err
-			}
-
-			err = structop.New(&b[i]).UpdateViaMap(data)
+			err := unmarshalNormalizedJSON(v, &b[i])
 			if err != nil {
 				return err
 			}
 		}
 		*a = b
 	}
+	return nil
+}
+
+func unmarshalNormalizedJSON(raw []byte, dst any) error {
+	var dataAsInterface any
+	if err := json.Unmarshal(raw, &dataAsInterface); err != nil {
+		return fmt.Errorf("failed to unmarshal data: %w", err)
+	}
+
+	normalizedData := normalizeMapKeys(dataAsInterface)
+	normalizedData = normalizeTimestamps(normalizedData)
+
+	normalizedRaw, err := json.Marshal(normalizedData)
+	if err != nil {
+		return fmt.Errorf("failed to re-marshal data: %w", err)
+	}
+
+	if err := json.Unmarshal(normalizedRaw, dst); err != nil {
+		return fmt.Errorf("failed to unmarshal json: %w", err)
+	}
+
 	return nil
 }
 
