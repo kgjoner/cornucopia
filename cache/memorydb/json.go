@@ -7,7 +7,7 @@ import (
 	"github.com/kgjoner/cornucopia/v2/cache"
 )
 
-func (q DAO) CacheJSON(key string, v interface{}, duration time.Duration) error {
+func (q Store) CacheJSON(key string, v interface{}, duration time.Duration) error {
 	data, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -17,7 +17,7 @@ func (q DAO) CacheJSON(key string, v interface{}, duration time.Duration) error 
 	return nil
 }
 
-func (q DAO) GetJSON(key string, v interface{}) error {
+func (q Store) GetJSON(key string, v interface{}) error {
 	jsonData, exists := q.data[key]
 	if !exists {
 		return cache.ErrNil
@@ -31,6 +31,6 @@ func (q DAO) GetJSON(key string, v interface{}) error {
 	return err
 }
 
-func (q DAO) Clear(key string) {
+func (q Store) Clear(key string) {
 	delete(q.data, key)
 }

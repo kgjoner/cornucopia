@@ -10,7 +10,7 @@ import (
 )
 
 // Check for a cached result of F, if no hit, run it. F must return (*R, error).
-func RunWithCache[R any, F any](q DAO, duration time.Duration, fn F) F {
+func RunWithCache[R any, F any](q Store, duration time.Duration, fn F) F {
 	fnName := getFuncName(fn)
 
 	wrapped := func(args ...any) (result R, err error) {

@@ -22,13 +22,13 @@ func (p *Pool) Close() error {
 	return nil
 }
 
-type DAO struct {
+type Store struct {
 	ctx  context.Context
 	data map[string]string
 }
 
-func (p *Pool) NewDAO(ctx context.Context) cache.DAO {
-	return &DAO{
+func (p *Pool) NewDAO(ctx context.Context) cache.Store {
+	return &Store{
 		ctx:  ctx,
 		data: p.data,
 	}

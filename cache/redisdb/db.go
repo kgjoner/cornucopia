@@ -45,13 +45,13 @@ func (p *Pool) Client() *redis.Client {
 	return p.db
 }
 
-type DAO struct {
+type Store struct {
 	ctx context.Context
 	db  *redis.Client
 }
 
-func (p Pool) NewDAO(ctx context.Context) cache.DAO {
-	return &DAO{
+func (p Pool) NewDAO(ctx context.Context) cache.Store {
+	return &Store{
 		ctx: ctx,
 		db:  p.db,
 	}

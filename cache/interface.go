@@ -10,11 +10,11 @@ import (
 var ErrNil = fmt.Errorf("cache: nil")
 
 type Pool interface {
-	NewDAO(context.Context) DAO
+	NewStore(context.Context) Store
 	Close() error
 }
 
-type DAO interface {
+type Store interface {
 	CacheJSON(key string, v interface{}, duration time.Duration) error
 	GetJSON(key string, v interface{}) error
 	Clear(key string)
