@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kgjoner/cornucopia/v2/cache"
-	"github.com/kgjoner/cornucopia/v2/cache/memorydb"
+	"github.com/kgjoner/cornucopia/v3/cache"
+	"github.com/kgjoner/cornucopia/v3/cache/memorydb"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/kgjoner/cornucopia/v2/cache"
+	"github.com/kgjoner/cornucopia/v3/cache"
 )
 
 func (q Store) CacheJSON(key string, v interface{}, duration time.Duration) error {

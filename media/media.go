@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/v2/apperr"
+	"github.com/kgjoner/cornucopia/v3/apperr"
 )
 
 type Media struct {

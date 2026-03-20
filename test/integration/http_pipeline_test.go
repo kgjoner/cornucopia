@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/apperr"
-	"github.com/kgjoner/cornucopia/v2/httpclient"
-	"github.com/kgjoner/cornucopia/v2/httpserver"
-	"github.com/kgjoner/cornucopia/v2/prim"
+	"github.com/kgjoner/cornucopia/v3/apperr"
+	"github.com/kgjoner/cornucopia/v3/httpclient"
+	"github.com/kgjoner/cornucopia/v3/httpserver"
+	"github.com/kgjoner/cornucopia/v3/prim"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

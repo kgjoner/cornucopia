@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/kgjoner/cornucopia/v2/apperr"
-	"github.com/kgjoner/cornucopia/v2/validator"
+	"github.com/kgjoner/cornucopia/v3/apperr"
+	"github.com/kgjoner/cornucopia/v3/validator"
 )
 
 type Market string

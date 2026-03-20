@@ -3,8 +3,8 @@ package prim_test
 import (
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/prim"
-	"github.com/kgjoner/cornucopia/v2/validator"
+	"github.com/kgjoner/cornucopia/v3/prim"
+	"github.com/kgjoner/cornucopia/v3/validator"
 	"github.com/stretchr/testify/assert"
 )
 

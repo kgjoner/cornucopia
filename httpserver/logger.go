@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/kgjoner/cornucopia/v2/apperr"
+	"github.com/kgjoner/cornucopia/v3/apperr"
 	log "github.com/sirupsen/logrus"
 )
 

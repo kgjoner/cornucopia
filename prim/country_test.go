@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/prim"
+	"github.com/kgjoner/cornucopia/v3/prim"
 )
 
 func TestCountry(t *testing.T) {

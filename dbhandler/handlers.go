@@ -3,7 +3,7 @@ package dbhandler
 import (
 	"database/sql"
 
-	"github.com/kgjoner/cornucopia/v2/prim"
+	"github.com/kgjoner/cornucopia/v3/prim"
 )
 
 func HandleListQuery[T any](rows *sql.Rows, pag *prim.Pagination, dest func(item *T) []any) (*prim.PaginatedData[T], error) {

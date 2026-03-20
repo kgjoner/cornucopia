@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kgjoner/cornucopia/v2/apperr"
-	v "github.com/kgjoner/cornucopia/v2/validator/internal"
+	"github.com/kgjoner/cornucopia/v3/apperr"
+	v "github.com/kgjoner/cornucopia/v3/validator/internal"
 )
 
 type Validator interface {

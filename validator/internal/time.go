@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kgjoner/cornucopia/v2/apperr"
+	"github.com/kgjoner/cornucopia/v3/apperr"
 )
 
 func Time(value reflect.Value, validations map[string][]string) error {

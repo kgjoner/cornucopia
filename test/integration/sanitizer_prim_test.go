@@ -3,8 +3,8 @@ package integration_test
 import (
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/prim"
-	"github.com/kgjoner/cornucopia/v2/sanitizer"
+	"github.com/kgjoner/cornucopia/v3/prim"
+	"github.com/kgjoner/cornucopia/v3/sanitizer"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
