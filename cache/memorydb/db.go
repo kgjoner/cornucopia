@@ -3,7 +3,7 @@ package memorydb
 import (
 	"context"
 
-	"github.com/kgjoner/cornucopia/v2/cache"
+	"github.com/kgjoner/cornucopia/v3/cache"
 )
 
 // Simple in memory cache for tests or pocs. It does not implement duration.

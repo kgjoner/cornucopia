@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/kgjoner/cornucopia/v2/cache"
+	"github.com/kgjoner/cornucopia/v3/cache"
 	"github.com/redis/go-redis/v9"
 )
 

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kgjoner/cornucopia/v2/datatransform"
-	"github.com/kgjoner/cornucopia/v2/prim"
+	"github.com/kgjoner/cornucopia/v3/datatransform"
+	"github.com/kgjoner/cornucopia/v3/prim"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/datatransform"
+	"github.com/kgjoner/cornucopia/v3/datatransform"
 	"github.com/stretchr/testify/assert"
 )
 

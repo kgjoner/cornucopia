@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/apperr"
+	"github.com/kgjoner/cornucopia/v3/apperr"
 	"github.com/stretchr/testify/assert"
 )
 

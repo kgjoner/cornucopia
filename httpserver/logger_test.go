@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kgjoner/cornucopia/v2/apperr"
-	"github.com/kgjoner/cornucopia/v2/httpserver"
+	"github.com/kgjoner/cornucopia/v3/apperr"
+	"github.com/kgjoner/cornucopia/v3/httpserver"
 )
 
 func TestNewLogger_withAppError(t *testing.T) {

@@ -13,8 +13,8 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kgjoner/cornucopia/v2/media"
-	"github.com/kgjoner/cornucopia/v2/prim"
+	"github.com/kgjoner/cornucopia/v3/media"
+	"github.com/kgjoner/cornucopia/v3/prim"
 )
 
 // Binder accumulates the first binding error so callers need check it only once.

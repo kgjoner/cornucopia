@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kgjoner/cornucopia/v2/httpserver"
-	"github.com/kgjoner/cornucopia/v2/media"
-	"github.com/kgjoner/cornucopia/v2/prim"
+	"github.com/kgjoner/cornucopia/v3/httpserver"
+	"github.com/kgjoner/cornucopia/v3/media"
+	"github.com/kgjoner/cornucopia/v3/prim"
 )
 
 // Mock media service for testing
