@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/kgjoner/cornucopia/v2/apperr"
-	"github.com/kgjoner/cornucopia/v2/i18n"
 	"github.com/kgjoner/cornucopia/v2/validator"
 )
 
@@ -51,10 +50,10 @@ func MarketByCurrency(currency Currency) (Market, error) {
 	return market, nil
 }
 
-func (m Market) Language() i18n.Language {
-	languageByMarket := map[Market]i18n.Language{
-		MarketBrazil: i18n.Portuguese,
-		MarketUSA:    i18n.English,
+func (m Market) Language() Locale {
+	languageByMarket := map[Market]Locale{
+		MarketBrazil: Portuguese,
+		MarketUSA:    English,
 	}
 
 	return languageByMarket[m]
