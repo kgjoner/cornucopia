@@ -1,6 +1,6 @@
-module github.com/kgjoner/cornucopia/v2
+module github.com/kgjoner/cornucopia/v3
 
-go 1.19
+go 1.25
 
 require github.com/stretchr/testify v1.8.4
 
@@ -20,7 +20,6 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-chi/chi/v5 v5.0.11
-	github.com/google/uuid v1.5.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.18.0
 	github.com/redis/go-redis/v9 v9.7.0
