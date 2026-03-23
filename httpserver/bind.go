@@ -399,6 +399,11 @@ func bindText(s string, dst any) error {
 		}
 		*v = bv
 	default:
+		rv := reflect.ValueOf(dst)
+		if rv.Kind() == reflect.Pointer && !rv.IsNil() && rv.Elem().Kind() == reflect.String {
+			rv.Elem().SetString(s)
+			return nil
+		}
 		return fmt.Errorf("httpserver: unsupported bind destination type %T", dst)
 	}
 	return nil

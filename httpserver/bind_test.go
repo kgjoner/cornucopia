@@ -104,6 +104,22 @@ func TestQueryParamInt(t *testing.T) {
 	}
 }
 
+func TestQueryParamStringAlias(t *testing.T) {
+	type MyString string
+
+	req := httptest.NewRequest("GET", "/test?name=alice", nil)
+
+	var name MyString
+	err := httpserver.Bind(req).QueryParam("name", &name).Err()
+
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if name != "alice" {
+		t.Errorf("Expected name 'alice', got '%s'", name)
+	}
+}
+
 func TestJSONBody(t *testing.T) {
 	type Input struct {
 		Name  string `json:"name"`
