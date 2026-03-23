@@ -1,7 +1,6 @@
 package prim
 
 import (
-	"encoding/json"
 	"net/mail"
 	"strings"
 
@@ -55,17 +54,6 @@ func (e Email) IsZero() bool {
 
 func (e Email) String() string {
 	return string(e)
-}
-
-func (e *Email) UnmarshalJSON(data []byte) error {
-	var s string
-	err := json.Unmarshal(data, &s)
-	if err != nil {
-		return err
-	}
-
-	*e, err = ParseEmail(s)
-	return err
 }
 
 func (e *Email) UnmarshalText(text []byte) error {

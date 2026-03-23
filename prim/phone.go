@@ -1,7 +1,6 @@
 package prim
 
 import (
-	"encoding/json"
 	"strings"
 
 	"github.com/kgjoner/cornucopia/v3/apperr"
@@ -69,17 +68,6 @@ func (p PhoneNumber) IsZero() bool {
 
 func (p PhoneNumber) String() string {
 	return string(p)
-}
-
-func (p *PhoneNumber) UnmarshalJSON(data []byte) error {
-	var s string
-	err := json.Unmarshal(data, &s)
-	if err != nil {
-		return err
-	}
-
-	*p, err = ParsePhoneNumber(s)
-	return err
 }
 
 func (p *PhoneNumber) UnmarshalText(text []byte) error {

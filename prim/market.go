@@ -72,17 +72,6 @@ func (m Market) IsZero() bool {
 	return m == ""
 }
 
-func (m *Market) UnmarshalJSON(data []byte) error {
-	var str string
-	err := json.Unmarshal(data, &str)
-	if err != nil {
-		return err
-	}
-
-	*m = Market(strings.ToLower(str))
-	return validator.Validate(*m)
-}
-
 func (m *Market) UnmarshalText(text []byte) error {
 	*m = Market(strings.ToLower(string(text)))
 	return validator.Validate(*m)

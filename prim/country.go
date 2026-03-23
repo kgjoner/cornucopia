@@ -60,19 +60,17 @@ func (c Country) Name() string {
 	return name
 }
 
-func (c Country) MarshalJSON() ([]byte, error) {
-	return json.Marshal(c.Name())
+func (c Country) MarshalText() ([]byte, error) {
+	return []byte(c.Name()), nil
 }
 
-func (c *Country) UnmarshalJSON(data []byte) error {
-	var s string
-	err := json.Unmarshal(data, &s)
+func (c *Country) UnmarshalText(text []byte) error {
+	parsed, err := ParseCountry(string(text))
 	if err != nil {
 		return err
 	}
-
-	*c, err = ParseCountry(s)
-	return err
+	*c = parsed
+	return nil
 }
 
 /* ================================================================================

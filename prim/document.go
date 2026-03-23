@@ -1,7 +1,6 @@
 package prim
 
 import (
-	"encoding/json"
 	"fmt"
 	"slices"
 	"strconv"
@@ -69,15 +68,13 @@ func (d Document) String() string {
 	return string(d)
 }
 
-func (d *Document) UnmarshalJSON(data []byte) error {
-	var s string
-	err := json.Unmarshal(data, &s)
+func (d *Document) UnmarshalText(text []byte) error {
+	parsed, err := ParseDocument(string(text))
 	if err != nil {
 		return err
 	}
-
-	*d, err = ParseDocument(s)
-	return err
+	*d = parsed
+	return nil
 }
 
 type DocumentParts struct {
