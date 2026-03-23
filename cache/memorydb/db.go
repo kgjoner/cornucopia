@@ -27,7 +27,7 @@ type Store struct {
 	data map[string]string
 }
 
-func (p *Pool) NewDAO(ctx context.Context) cache.Store {
+func (p *Pool) NewStore(ctx context.Context) cache.Store {
 	return &Store{
 		ctx:  ctx,
 		data: p.data,

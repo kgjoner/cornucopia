@@ -11,7 +11,7 @@ import (
 )
 
 var cachePool, _ = memorydb.NewPool()
-var cacheRepo = cachePool.NewDAO(context.Background())
+var cacheRepo = cachePool.NewStore(context.Background())
 var sleepTime = 1 * time.Second
 
 func TestRunWithCache(t *testing.T) {
